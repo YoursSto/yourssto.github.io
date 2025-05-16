@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-  <script type="application/ecmascript"><![CDATA[
+    <script src="script.js">
+    <script type="application/ecmascript"><![CDATA[
     // This script runs when the SVG is loaded
+    requestIdleCallback(addDynamicScript);
     if (window.parent && window.parent.document) {
       const p = window.parent.document.createElement('p');
       p.textContent = 'Injected by SVG script!';
