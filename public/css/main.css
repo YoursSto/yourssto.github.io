@@ -254,12 +254,17 @@ div{
 
 
 
-iframe{
+pre code iframe{
   width: 380px;
   height: 580px;
   border-style: none;
   overflow: hidden;
-  margin: 1% 0;
+  margin: 0;
+}
+
+pre:has(iframe) {
+  padding: 0;
+  overflow: hidden;
 }
 
 .title{
@@ -369,6 +374,7 @@ button {
 
   @media screen and (max-width: 651px) {
 
+
     main h1{
       padding: 1% 5%;
       font-size:x-large;
@@ -395,6 +401,7 @@ button {
       flex-direction: column;
       padding: 3%;
       margin: 5% auto;
+      height: max-content;
 
     }
 
@@ -402,5 +409,14 @@ button {
       max-width: 100%;
 
     }
+
+    pre code iframe{
+    width: 100vw;
+    overflow: auto;
+  }
+
+  footer{
+    width: 102vw;
+  }
 
   }

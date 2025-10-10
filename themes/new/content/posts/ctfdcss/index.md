@@ -6,7 +6,7 @@ tags = ['config']
 +++
 
 
-Creating a custom CTFd theme based on the core-beta one was not really straightforward, so while walking my way to achieving that, I’ve notes down the steps I figured out in case they might ever turn out useful for you ^.^
+Creating a custom CTFd theme based on the core-beta one was not really straightforward, so while walking my way to achieving that, I’ve noted down the steps I figured out in case they might ever turn out useful for you ^.^
 
 Plus, a [pull request](https://github.com/CTFd/core-beta/commit/ab1a24b6ddf7d081a3d27b0800a33ecb082c84cb) was submitted to the [official CTFd core-beta repository](https://github.com/CTFd/core-beta) (and accepted), and these steps are now included directly in the official documentation.
 
