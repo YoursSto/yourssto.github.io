@@ -1,6 +1,6 @@
 +++
 date = '2025-10-10T00:58:29+02:00'
-draft = true
+draft = false
 title = 'Whoami'
 +++
 

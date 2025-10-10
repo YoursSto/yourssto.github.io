@@ -248,6 +248,7 @@ div{
 .tag{
   padding: 5%;
   height: max-content;
+  width: max-content;
   overflow: unset;
 }
 
