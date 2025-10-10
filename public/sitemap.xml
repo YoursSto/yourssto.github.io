@@ -5,21 +5,6 @@
     <loc>http://localhost:1313/whoami/</loc>
     <lastmod>2025-10-10T00:58:29+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/intigriti-writeup-october-challenge/</loc>
-    <lastmod>2023-03-15T11:00:00-07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/lfi/</loc>
-    <lastmod>2023-03-15T11:00:00-07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/rce/</loc>
-    <lastmod>2023-03-15T11:00:00-07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/ssrf/</loc>
-    <lastmod>2023-03-15T11:00:00-07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2023-03-15T11:00:00-07:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/posts/ctfdcss/</loc>
     <lastmod>2023-01-01T08:30:00-07:00</lastmod>
   </url><url>
@@ -30,5 +15,7 @@
     <lastmod>2023-01-01T08:00:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
   </url>
 </urlset>
