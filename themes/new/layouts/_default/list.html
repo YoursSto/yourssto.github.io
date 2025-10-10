@@ -1,0 +1,55 @@
+{{ define "main" }}
+
+
+{{ if eq .Kind "taxonomy" }}
+  <h1>{{ .Title  }}</h1>
+  <div class="tags-div">
+    {{ range .Data.Terms.Alphabetical }}
+      <div class="card tag">
+        <a href="{{ .Page.RelPermalink }}">
+          <h3>{{ .Term }}</h3>
+        </a>
+        <span class="tag-count">({{ len .Pages }})</span>
+      </div>
+    {{ end }}
+  </div>
+
+  {{ else }}
+
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+    {{ range .Pages }}
+        
+      <a href="{{ .RelPermalink }}">
+        <div class="card button">
+        <div class="text-preview">
+
+          <h2>{{ .LinkTitle }}</h2>
+          <!-- {{ .Summary }} -->
+          {{ $content := replace .Content "\n" "" }}
+          {{ $firstParagraph := findRE "<p>.*?</p>" $content 1 }}
+          {{ with index $firstParagraph 0 }}
+            {{ . | safeHTML }}
+          {{ end }}
+
+
+
+        </div>
+
+
+        {{ $post := . }}  {{/* store current page */}}
+
+        {{/* Extract first <img> from post content */}}
+        {{ $img := findRE "<img[^>]*src=\"([^\"]+)\"[^>]*>" $post.Content 1 }}
+        {{ with index $img 0 }}
+          {{ $src := replaceRE ".*src=\"([^\"]+)\".*" "$1" . }}
+          <img src="{{ printf "%s%s" $post.RelPermalink $src }}" alt="thumbnail">
+        {{ end }}
+
+
+        </div>
+      </a>
+      {{ end }}
+    {{ end }}
+
+{{ end }}

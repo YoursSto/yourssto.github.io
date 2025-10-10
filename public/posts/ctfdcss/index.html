@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Creating Custom Theme (based on core-beta) | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+      <script src="/js/main.js"></script>
+
+
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Creating Custom Theme (based on core-beta)</h1>
+  
+    
+
+    
+    <div class="content">
+      <p>Creating a custom CTFd theme based on the core-beta one was not really straightforward, so while walking my way to achieving that, I’ve notes down the steps I figured out in case they might ever turn out useful for you ^.^</p>
+<p>Plus, a <a href="https://github.com/CTFd/core-beta/commit/ab1a24b6ddf7d081a3d27b0800a33ecb082c84cb">pull request</a> was submitted to the <a href="https://github.com/CTFd/core-beta">official CTFd core-beta repository</a> (and accepted), and these steps are now included directly in the official documentation.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>
+<p>Clone core-beta theme locally to a seperate folder</p>
+<pre tabindex="0"><code>git clone https://github.com/CTFd/core-beta.git custom-theme
+</code></pre><p>To clarify the structure of the project, the <code>./assets</code> folder contains the uncompiled source files (the ones you can modify), while the <code>./static</code> directory contains the compiled ones.</p>
+</li>
+<li>
+<p>Install <a href="https://classic.yarnpkg.com/en/">Yarn</a> following the <a href="https://classic.yarnpkg.com/en/docs/install">official installation guides</a>.</p>
+<ul>
+<li><strong>Yarn</strong> is a dependency management tool used to install and manage project packages</li>
+<li><strong><a href="https://vite.dev/guide/">Vite</a></strong> handles the frontend tooling in CTFd by building optimized assets that are served through Flask.</li>
+</ul>
+</li>
+<li>
+<p>Run <code>yarn install</code> in the root of <code>custom-theme</code> folder to install the necessary Node packages including <code>vite</code>.</p>
+</li>
+<li>
+<p>Run the appropriate yarn build mode:</p>
+<ul>
+<li>Run <code>yarn dev</code> (this will run <code>vite build --watch</code>) while developing the theme.</li>
+<li>Run <code>yarn build</code> (which will run <code>vite build</code>) for a one-time build.
+Vite allows you to preview changes instantly with hot reloading.</li>
+</ul>
+</li>
+<li>
+<p>Now, you can start your modifications in the <code>assets</code> folder. Each time you save, Vite will automatically recompile everything (assuming you are using <code>yarn dev</code>), and you can directly see the result by importing your compiled theme into a CTFd instance.
+Note: You do not need the <code>node_modules</code> folder, you can simply zip the theme directory without it.</p>
+</li>
+<li>
+<p>When you are ready you can use <code>yarn build</code> to build the production copy of your theme.</p>
+</li>
+</ol>
+<p><img src="image.png" alt="thumbnail"></p>
+
+    </div>
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2025 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

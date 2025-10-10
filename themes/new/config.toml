@@ -1,0 +1,7 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Yours, Sto ʚɞ'
+theme = 'new'
+
+[markup.goldmark.renderer]
+unsafe = true
