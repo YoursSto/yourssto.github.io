@@ -1,12 +1,7 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://yourssto.github.io/'
 languageCode = 'en-us'
 title = 'Yours, Sto ʚɞ'
 theme = 'new'
-
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
 
 [caches]
   [caches.images]

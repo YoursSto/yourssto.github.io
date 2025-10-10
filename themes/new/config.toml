@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://yourssto.github.io/'
 languageCode = 'en-us'
 title = 'Yours, Sto ʚɞ'
 theme = 'new'
@@ -6,7 +6,3 @@ theme = 'new'
 [markup.goldmark.renderer]
 unsafe = true
 
-
-[caches]
-  [caches.images]
-    dir = ':cacheDir/images'
