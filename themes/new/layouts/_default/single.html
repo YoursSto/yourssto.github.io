@@ -1,6 +1,12 @@
 {{ define "main" }}
   <h1>{{ .Title }}</h1>
-  
+
+    {{ if ne .Params.showDate false }}
+      <p class="date">{{ .Date.Format "Jan 02, 2006" }}</p>
+    {{ end }}
+
+
+    <!-- <p class="date">{{ .Date.Format "Jan 01, 2006"}}</p> -->
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     <!-- {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
     {{ $dateHuman := .Date | time.Format ":date_long" }}
@@ -8,6 +14,7 @@
     <div class="content">
       {{ .Content }}
     </div>
+    
 
   </div>
 

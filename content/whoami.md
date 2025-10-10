@@ -1,6 +1,7 @@
 +++
 date = '2025-10-10T00:58:29+02:00'
 draft = false
+showDate = false
 title = 'Whoami'
 +++
 

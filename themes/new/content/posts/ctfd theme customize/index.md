@@ -1,6 +1,6 @@
 +++
-title = 'Creating Custom Theme (based on core-beta)'
-date = 2023-01-01T08:30:00-07:00
+title = 'Creating Custom CTFd Theme (based on core-beta)'
+date = 2025-10-09T00:40:04-07:00
 draft = false
 tags = ['config']
 +++
@@ -13,7 +13,7 @@ Plus, a [pull request](https://github.com/CTFd/core-beta/commit/ab1a24b6ddf7d081
 
 ## Steps
 
-1. Clone core-beta theme locally to a seperate folder
+1. Clone core-beta theme locally to a separate folder
    ```
    git clone https://github.com/CTFd/core-beta.git custom-theme
    ```

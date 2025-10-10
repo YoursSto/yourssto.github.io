@@ -32,7 +32,8 @@ body{
   font-weight: 300;
   overflow-x: hidden;
   word-wrap: break-word;
-  min-height: 99vh;
+  min-height: 100vh;
+  margin: 0;
 }
 
 
@@ -131,6 +132,10 @@ div{
     text-align: left;
 }
 
+.feed{
+  padding: 2% 0;
+}
+
 .content{
   /* display: flex;
   flex-direction: column;
@@ -183,7 +188,7 @@ div{
 }
 
 .tags{
-  padding: 2%
+  padding: 1%
 }
 
 .tags ul{
