@@ -94,6 +94,11 @@ code{
   color: #e8d4cd;
 }
 
+
+strong{
+  font-weight: bold;
+}
+
 .pdp{
     border-radius: 50%;
     width: 35vh;
@@ -164,7 +169,7 @@ div{
 }
 
 .content h2{
-  margin-top: 3%;
+  margin-top: 2%;
   padding: 0 9%;
 }
 
@@ -178,6 +183,14 @@ div{
  .content ol{
   width: 73%;
  }
+
+.content li{
+  width: 75vw;
+}
+
+.content li p{
+  width: 100%;
+}
 
 .highlight{
   padding: 0 5%;
@@ -399,12 +412,12 @@ button {
 
     header h3{
       font-size: larger;
-      width: 95%;
+      width: 85%;
     }
 
     .card{
-      flex-direction: column;
-      padding: 3%;
+      flex-direction: column-reverse;
+      /* padding: 3%; */
       margin: 5% auto;
       height: max-content;
 
@@ -412,7 +425,12 @@ button {
 
     .card img{
       max-width: 100%;
+      padding-bottom: 3%;
 
+    }
+
+    .card .text-preview{
+      padding-bottom: 5%;
     }
 
     pre code iframe{

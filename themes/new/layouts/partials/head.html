@@ -6,3 +6,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
 {{ partialCached "head/js.html" . }}
+
+<meta name="description" content="{{ .Params.description | default .Site.Params.description }}">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ .Title }}">
+<meta property="og:description" content="{{ .Params.description | default .Site.Params.description }}">
+<meta property="og:image" content="{{ .Site.Params.image | absURL }}">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ .Title }}">
+<meta name="twitter:description" content="{{ .Params.description | default .Site.Params.description }}">
+<meta name="twitter:image" content="{{ .Site.Params.image | absURL }}">
+

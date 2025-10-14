@@ -1,8 +1,9 @@
 +++
-title = 'Creating Custom CTFd Theme (based on core-beta)'
+title = 'Creating a Custom CTFd Theme (based on core-beta)'
 date = 2025-10-09T00:40:04-07:00
 draft = false
 tags = ['config']
+description= "A quick guide on creating a custom CTFd theme (based on core-beta)."
 +++
 
 
@@ -32,6 +33,7 @@ Plus, a [pull request](https://github.com/CTFd/core-beta/commit/ab1a24b6ddf7d081
 
 
 6. Now, you can start your modifications in the `assets` folder. Each time you save, Vite will automatically recompile everything (assuming you are using `yarn dev`), and you can directly see the result by importing your compiled theme into a CTFd instance.
+
    Note: You do not need the `node_modules` folder, you can simply zip the theme directory without it.
 
 7. When you are ready you can use `yarn build` to build the production copy of your theme.

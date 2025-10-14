@@ -10,4 +10,4 @@ Moreover, I am a graphic designer and a web developer (with a soft spot for fron
 
 
 ## Root-Me Overview
-    {{<iframe src="https://root-me-diff.vercel.app/rm-gh?nickname=sto-837233&amp;gstats=show">}}
+    {{<iframe src="https://root-me-diff.vercel.app/rm-gh?nickname=sto-837233&gstats=show">}}

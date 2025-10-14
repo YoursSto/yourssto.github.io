@@ -6,17 +6,24 @@
     <description>Recent content in Home on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Oct 2025 00:58:29 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Intigriti | Challenge 1025 Writeup</title>
+      <link>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</link>
+      <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</guid>
+      <description>&lt;p&gt;Intigriti&amp;rsquo;s October challenge 1025 was a really cool one, leveraging SSRF, local file inclusion, and RCE. I first found the flag in an unintended manner, and then worked my way into finding the RCE, popping that shell and flagging again!&lt;/p&gt;&#xA;&lt;p&gt;Kudos to &lt;a href=&#34;https://x.com/chux13786509&#34;&gt;@chux&lt;/a&gt; for this fun challenge ^.^&lt;/p&gt;&#xA;&lt;h2 id=&#34;unintended-solution&#34;&gt;Unintended Solution&lt;/h2&gt;&#xA;&lt;p&gt;We first have a panel where we can input the URL of an image and the app goes off to fetch it. Sounds innocent, right? In reality that panel will fetch any URL you give it. Indeed, under the hood the backend just runs a curl request with the supplied URL (and in our case it does not even check that the result is an image). That means we are not handing the server an &lt;em&gt;image&lt;/em&gt; so much as handing it an instruction: &lt;em&gt;go ask that address for me.&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Whoami</title>
       <link>http://localhost:1313/whoami/</link>
       <pubDate>Fri, 10 Oct 2025 00:58:29 +0200</pubDate>
       <guid>http://localhost:1313/whoami/</guid>
-      <description>&lt;p&gt;Hola! I&amp;rsquo;m Sto. Cybersecurity engineering student, Co-founder of &lt;a href=&#34;https://www.nops.re/&#34;&gt;N0PSctf&lt;/a&gt;, Co-president at N0PS, CTF player, Root-Me player, Bug hunter and Pentesting aficionada, I do love finding vulnerabilities in stuff (and flagging!).&#xA;Moreover, I am a graphic designer and a web developer (with a soft spot for front-end), as I was keen on arts since I was a kid.&lt;/p&gt;&#xA;&lt;h2 id=&#34;root-me-overview&#34;&gt;Root-Me Overview&lt;/h2&gt;&#xA;&lt;pre&gt;&lt;code&gt;&lt;iframe src=&#34;https://root-me-diff.vercel.app/rm-gh?nickname=sto-837233&amp;amp;amp;gstats=show&#34;&gt;&lt;/iframe&gt;&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+      <description>&lt;p&gt;Hola! I&amp;rsquo;m Sto. Cybersecurity engineering student, Co-founder of &lt;a href=&#34;https://www.nops.re/&#34;&gt;N0PSctf&lt;/a&gt;, Co-president at N0PS, CTF player, Root-Me player, Bug hunter and Pentesting aficionada, I do love finding vulnerabilities in stuff (and flagging!).&#xA;Moreover, I am a graphic designer and a web developer (with a soft spot for front-end), as I was keen on arts since I was a kid.&lt;/p&gt;&#xA;&lt;h2 id=&#34;root-me-overview&#34;&gt;Root-Me Overview&lt;/h2&gt;&#xA;&lt;pre&gt;&lt;code&gt;&lt;iframe src=&#34;https://root-me-diff.vercel.app/rm-gh?nickname=sto-837233&amp;amp;gstats=show&#34;&gt;&lt;/iframe&gt;&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     <item>
-      <title>Creating Custom CTFd Theme (based on core-beta)</title>
+      <title>Creating a Custom CTFd Theme (based on core-beta)</title>
       <link>http://localhost:1313/posts/ctfd-theme-customize/</link>
       <pubDate>Thu, 09 Oct 2025 00:40:04 -0700</pubDate>
       <guid>http://localhost:1313/posts/ctfd-theme-customize/</guid>

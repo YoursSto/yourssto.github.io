@@ -6,3 +6,7 @@ theme = 'new'
 [caches]
   [caches.images]
     dir = ':cacheDir/images'
+
+[params]
+  description = "Yours, Sto - The Blog"
+  image = "/thumbnail.png"

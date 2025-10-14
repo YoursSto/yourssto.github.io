@@ -6,10 +6,17 @@
     <description>Recent content in Posts on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 09 Oct 2025 00:40:04 -0700</lastBuildDate>
+    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Creating Custom CTFd Theme (based on core-beta)</title>
+      <title>Intigriti | Challenge 1025 Writeup</title>
+      <link>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</link>
+      <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</guid>
+      <description>&lt;p&gt;Intigriti&amp;rsquo;s October challenge 1025 was a really cool one, leveraging SSRF, local file inclusion, and RCE. I first found the flag in an unintended manner, and then worked my way into finding the RCE, popping that shell and flagging again!&lt;/p&gt;&#xA;&lt;p&gt;Kudos to &lt;a href=&#34;https://x.com/chux13786509&#34;&gt;@chux&lt;/a&gt; for this fun challenge ^.^&lt;/p&gt;&#xA;&lt;h2 id=&#34;unintended-solution&#34;&gt;Unintended Solution&lt;/h2&gt;&#xA;&lt;p&gt;We first have a panel where we can input the URL of an image and the app goes off to fetch it. Sounds innocent, right? In reality that panel will fetch any URL you give it. Indeed, under the hood the backend just runs a curl request with the supplied URL (and in our case it does not even check that the result is an image). That means we are not handing the server an &lt;em&gt;image&lt;/em&gt; so much as handing it an instruction: &lt;em&gt;go ask that address for me.&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Creating a Custom CTFd Theme (based on core-beta)</title>
       <link>http://localhost:1313/posts/ctfd-theme-customize/</link>
       <pubDate>Thu, 09 Oct 2025 00:40:04 -0700</pubDate>
       <guid>http://localhost:1313/posts/ctfd-theme-customize/</guid>

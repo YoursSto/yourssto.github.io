@@ -1,1 +1,1 @@
-<iframe src="{{ .Get "src" }}"></iframe>
+<iframe src="{{ .Get "src" | safeHTMLAttr }}"></iframe>

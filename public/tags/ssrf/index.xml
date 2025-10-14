@@ -6,14 +6,14 @@
     <description>Recent content in SSRF on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 15 Mar 2023 11:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/ssrf/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Intigriti | October Challenge Writeup</title>
-      <link>http://localhost:1313/posts/intigriti-writeup-october-challenge/</link>
-      <pubDate>Wed, 15 Mar 2023 11:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/intigriti-writeup-october-challenge/</guid>
-      <description>&lt;p&gt;Intigriti&amp;rsquo;s October challenge was a really cool challenge, leveraging SSRF, local file inclusion, and RCE. I first found the flag in an unintended manner, and then worked my way into finding the RCE, popping that shell and flagging again ^.^&lt;/p&gt;&#xA;&lt;h2 id=&#34;unintended-solution&#34;&gt;Unintended Solution&lt;/h2&gt;&#xA;&lt;p&gt;We first have a panel to input a &amp;ldquo;URL&amp;rdquo; of an image that would be fetched. The first idea that comes to one&amp;rsquo;s mind upon seeing this is : &lt;strong&gt;Server Side Request Forgery (SSRF)&lt;/strong&gt;. I first set the input to &lt;code&gt;file:///etc/passwd&lt;/code&gt;, but obtained the error &lt;code&gt;Invalid URL: must include &#39;http&#39;&lt;/code&gt;:&lt;/p&gt;</description>
+      <title>Intigriti | Challenge 1025 Writeup</title>
+      <link>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</link>
+      <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</guid>
+      <description>&lt;p&gt;Intigriti&amp;rsquo;s October challenge 1025 was a really cool one, leveraging SSRF, local file inclusion, and RCE. I first found the flag in an unintended manner, and then worked my way into finding the RCE, popping that shell and flagging again!&lt;/p&gt;&#xA;&lt;p&gt;Kudos to &lt;a href=&#34;https://x.com/chux13786509&#34;&gt;@chux&lt;/a&gt; for this fun challenge ^.^&lt;/p&gt;&#xA;&lt;h2 id=&#34;unintended-solution&#34;&gt;Unintended Solution&lt;/h2&gt;&#xA;&lt;p&gt;We first have a panel where we can input the URL of an image and the app goes off to fetch it. Sounds innocent, right? In reality that panel will fetch any URL you give it. Indeed, under the hood the backend just runs a curl request with the supplied URL (and in our case it does not even check that the result is an image). That means we are not handing the server an &lt;em&gt;image&lt;/em&gt; so much as handing it an instruction: &lt;em&gt;go ask that address for me.&lt;/em&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
