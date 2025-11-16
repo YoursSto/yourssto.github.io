@@ -17,45 +17,48 @@
   {{ else }}
 
     <h1>{{ .Title }}</h1>
+
+    <div class="posts-list">
+
     {{ .Content }}
     {{ range .Pages }}
         
       <a href="{{ .RelPermalink }}">
         <div class="card button">
-        <div class="text-preview">
+          <div class="text-preview">
 
-          <h2>{{ .LinkTitle }}</h2>
-          
-          <!-- {{ .Summary }} -->
-          {{ $content := replace .Content "\n" "" }}
-          {{ $firstParagraph := findRE "<p>.*?</p>" $content 1 }}
-          {{ with index $firstParagraph 0 }}
-            {{ . | safeHTML }}
-          {{ end }}
+            <h2>{{ .LinkTitle }}</h2>
+            
+            <!-- {{ .Summary }} -->
+            {{ $content := replace .Content "\n" "" }}
+            {{ $firstParagraph := findRE "<p>.*?</p>" $content 1 }}
+            {{ with index $firstParagraph 0 }}
+              {{ . | safeHTML }}
+            {{ end }}
 
-          <span class="date">{{ .Date.Format "Jan 02, 2006" }}  
-            |
-          {{ if .Params.tags }}
-            {{ range .Params.tags }}#{{ . }} {{ end }}
-          {{ end }}
-          </span>
+            <span class="date">{{ .Date.Format "Jan 02, 2006" }}  
+              |
+            {{ if .Params.tags }}
+              {{ range .Params.tags }}#{{ . }} {{ end }}
+            {{ end }}
+            </span>
 
-        </div>
+          </div>
 
+          <div class="thumbnail" >
+              {{ $post := . }}  {{/* store current page */}}
 
-        {{ $post := . }}  {{/* store current page */}}
-
-        {{/* Extract first <img> from post content */}}
-        {{ $img := findRE "<img[^>]*src=\"([^\"]+)\"[^>]*>" $post.Content 1 }}
-        {{ with index $img 0 }}
-          {{ $src := replaceRE ".*src=\"([^\"]+)\".*" "$1" . }}
-          <img src="{{ printf "%s%s" $post.RelPermalink $src }}" alt="thumbnail">
-        {{ end }}
-
+              {{/* Extract first <img> from post content */}}
+              {{ $img := findRE "<img[^>]*src=\"([^\"]+)\"[^>]*>" $post.Content 1 }}
+              {{ with index $img 0 }}
+                {{ $src := replaceRE ".*src=\"([^\"]+)\".*" "$1" . }}
+                <img src="{{ printf "%s%s" $post.RelPermalink $src }}" alt="thumbnail">
+              {{ end }}
+          </div>
 
         </div>
       </a>
       {{ end }}
     {{ end }}
-
+  </div>
 {{ end }}
