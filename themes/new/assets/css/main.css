@@ -1,7 +1,7 @@
 
-html{
+/* html{
   background-color: #e8d4cd;
-}
+} */
 
 header {
   border-bottom: 1px solid #e8d4cd28;
@@ -143,6 +143,14 @@ div{
 .feed, .posts-list{
   /* padding: 2% 0; */
   margin: 0 7%;
+}
+
+.date{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 1%;
 }
 
 .content{
@@ -465,6 +473,11 @@ button {
 
     .card .text-preview{
       padding-bottom: 5%;
+    }
+
+    .pdp{
+      width: 25vh;
+      height: 25vh;
     }
 
     .text-preview{
