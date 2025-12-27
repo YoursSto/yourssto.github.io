@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Web on Yours, Sto ʚɞ</title>
+    <link>http://localhost:1313/tags/web/</link>
+    <description>Recent content in Web on Yours, Sto ʚɞ</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Oct 2025 00:00:00 -0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/web/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Root-Xmas 2025 | Writeup Selection</title>
+      <link>http://localhost:1313/posts/root-xmas-2025/</link>
+      <pubDate>Wed, 15 Oct 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/root-xmas-2025/</guid>
+      <description>&lt;p&gt;Once more, Root-Xmas was back this year, and once more, it was the highlight of the month 🎀&lt;/p&gt;&#xA;&lt;p&gt;To speak my heart, I really learned a lot during this CTF as the web aficionada that I am had to get out of her comfort zone to tryhard reverse, hardware, crypto and pwn,etc. In fact, from each challenge, I not only gained a flag, but also a new trick I learn. I did not flag everything actually, only 20 among the 24 challenges and finished 12th/2500 players (promise will do better next year)&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

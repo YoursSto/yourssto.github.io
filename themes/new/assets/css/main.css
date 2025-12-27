@@ -74,7 +74,7 @@ a:hover{
 }
 
 hr{
-  width: 75%;
+  width: 55%;
   color: #e8d4cd;
   border : 1px solid #e8d4cd28;
 }
@@ -84,6 +84,7 @@ main{
     align-items: center;
     flex-direction: column;
     flex: 1; 
+    width: 100vw;
 }
 
 main h1{
@@ -177,7 +178,7 @@ div{
 .content p, .content h3{
   padding: 0; 
   text-align: left;
-  width: 75%;
+  width: 55%;
 }
 
 .content h2{
@@ -186,18 +187,18 @@ div{
 }
 
 .content ul{
-  width: 71%;
+  width: 51%;
   padding: 0;
   display: block;
   list-style-type: disc;
 }
 
  .content ol{
-  width: 73%;
+  width: 53%;
  }
 
 .content li{
-  width: 75vw;
+  width: 55vw;
 }
 
 .content li p{
@@ -208,7 +209,8 @@ div{
   padding: 0 5%;
   display: block;
   overflow: auto;
-  width: 75%; 
+  width: 55%; 
+  /* min-width: 75% */
 
 }
 
@@ -219,6 +221,11 @@ div{
 .tags ul{
   padding: 0;
   margin: 0;
+}
+
+
+.card.tag {
+padding:0.5em;
 }
 
 
@@ -288,7 +295,9 @@ div{
   justify-content: center;
   align-items: center;
   gap: 1em;
-  margin-top: 15%;
+  margin-top: 3%;
+  max-width: 75vw;
+  flex-wrap: wrap;
 }
 
 .tag{
@@ -430,6 +439,29 @@ button {
       .thumbnail{
       display: none;
       }
+
+
+      .content p, .content h3{
+        width: 75%;
+      }
+
+      .content ul{
+        width: 71%;
+      }
+
+      .content ol{
+        width: 73%;
+      }
+
+      .content li{
+        width: 75vw;
+      }
+
+
+      .highlight{
+        width: 75%; 
+      }
+
     }
 
   @media screen and (max-width: 651px) {
@@ -474,6 +506,8 @@ button {
     .card .text-preview{
       padding-bottom: 5%;
     }
+
+
 
     .pdp{
       width: 25vh;
