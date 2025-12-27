@@ -6,12 +6,12 @@
     <description>Recent content in Awk on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 27 Oct 2025 00:00:00 -0100</lastBuildDate>
+    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/awk/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Root-Xmas 2025 | Writeup Selection</title>
       <link>http://localhost:1313/posts/root-xmas-2025/</link>
-      <pubDate>Mon, 27 Oct 2025 00:00:00 -0100</pubDate>
+      <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
       <guid>http://localhost:1313/posts/root-xmas-2025/</guid>
       <description>&lt;p&gt;Once more, Root-Xmas CTF was back this year, and once more, it was the highlight of the month 🎀 This blog post details three of my challenges&amp;rsquo; solutions for the Days 8, 11 and 18, including a Bash jail, a Ruby web app and an &lt;code&gt;awk&lt;/code&gt; privesc.&lt;/p&gt;&#xA;&lt;p&gt;To speak my heart, I really learned a lot during this CTF as the web aficionada that I am had to get out of her comfort zone and really tryhard reverse, hardware, crypto, pwn, etc. In fact, from each challenge of the twenty which I validated, I did gain not only a flag, but also several new insights.&lt;/p&gt;</description>
     </item>
