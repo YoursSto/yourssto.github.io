@@ -3,7 +3,7 @@ title = 'Root-Xmas 2025 | Writeup Selection'
 date = 2025-12-27T00:00:00-01:00
 draft = false
 tags = ['Bash','Ruby','awk','privesc']
-description= "Writeups for a selection of Root-Xmas 2025 challenges."
+description= "Writeups for a selection of Root-Xmas CTF 2025 challenges, days 8, 11 and 18."
 +++
 
 Once more, Root-Xmas CTF was back this year, and once more, it was the highlight of the month 🎀 This blog post details three of my challenges' solutions for the Days 8, 11 and 18, including a Bash jail, a Ruby web app and an `awk` privesc.
