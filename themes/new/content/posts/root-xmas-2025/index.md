@@ -149,8 +149,7 @@ Take Santa's sleigh to navigate through the depths of Ruby, where you will find 
 
 
 ---
-In this challenge, we are given a web application where we can we can create tickets and upload attachments (images or PDFs) for which thumbnails will be generated. We can see from the source files that our flag is the admin password so we need to extract that somehow. 
-We first think about an SQL injection, and while looking through the files we observe the following code :
+In this challenge, we are given a web application where we can create tickets and upload attachments (images or PDFs) for which thumbnails will be generated. We can see from the source files that our flag is the admin password so we need to extract that somehow, maybe an SQL injection? And while looking through the files we observe the following code :
 ```ruby
 if params[:sort].present?
     @tickets = @tickets.order(Arel.sql(params[:sort]))
@@ -158,7 +157,7 @@ else
     @tickets = @tickets.order(created_at: :desc)
 end
 ```
-This is textbook SQL injection in the `sort` parameter. Nevertheless, to get be able to exploit it, we first need to access the admin panel. Let's try to achieve that.
+This is textbook SQL injection in the `sort` parameter. Nevertheless, to be able to exploit it, we first need to access the admin panel. Let's try to achieve that.
 
 I will not detail everything as the [author's writeup](https://elweth.fr/writeups/Root-Me_-_XMAS_2025/Day_11_-_TicketTracker) explains well the entirety of the challenge, Nevertheless, I will focus on what I did differently, so kinda the _unintended_ solution ^^
 
@@ -172,7 +171,7 @@ For the first part, I did as the original writeup : I exploited the mass assignm
     "role":"admin"
 }}
 ```
-Even though our role is `admin`, our user ID is 2, and we know that the admin panel is only accessible with the first user ID given the code snippet below : 
+Even though our role is `admin`, our user ID is 2, and we know that the admin panel is only accessible for the user with the first ID given the code snippet below : 
 ```ruby
 def require_admin
     unless @current_user && @current_user.id == 1
@@ -242,14 +241,14 @@ Hence, if we manage to obtain the admin's `session_id`, we will gain access to t
 
 After digging a bit more into the challenge source code, I did not see a clear vulnerability that we could use. However, given that we can upload files, maybe we can find a way to exploit that feature especially with the custom thumbnail generation function.   
 With only PDFs and images, we cannot do much but maybe we can do more?  
-After reading this great [Synacktiv post](https://www.synacktiv.com/en/publications/playing-with-imagetragick-like-its-2016#footnote8_d5xu6ed), I first tried using the **PDF/PostScript polyglot** approach, but did not manage to make it work correctly as my PostScript was not executed.  
-Therefore, I focused on SVGs as, in my previous attempt, I succeeded creating PDF/SVGs due to the parser confusion. After several options for many hours, I found this [article](https://swarm.ptsecurity.com/exploiting-arbitrary-object-instantiations/) that underlines the `VID` format which enables **filename expansions** and I quote :
+After reading this great [Synacktiv post](https://www.synacktiv.com/en/publications/playing-with-imagetragick-like-its-2016#footnote8_d5xu6ed), I first tried using the **PDF/PostScript polyglot** approach, but did not manage to make it work correctly as my PostScript was not being executed.  
+Therefore, I focused on SVGs as, in my previous attempt, I succeeded creating SVGs that were accepted (considered as PDFs) due to the parser confusion. After several hours of trying different payloads, I found this [article](https://swarm.ptsecurity.com/exploiting-arbitrary-object-instantiations/) that underlines the `VID` format which enables **filename expansions** and I quote :
 ```sh
 The call of ExpandFilenames means that the VID scheme accepts masks, and constructs filepaths using them.
 
 Therefore, by using the vid: scheme, we can include our temporary file with the MSL content without knowing its name
 ``` 
-This was a turning point. I first tried to include the session file content in the SVG as an MSL as the article suggsted but that was in vain (and that makes sense as our session file is not a valid MSL) : 
+This was a turning point. I first tried to include the session file content in the SVG as an MSL as the article suggested but that was in vain (and that makes sense as our session file is not a valid MSL) : 
 ```xml
 <SVG height="100" width="100"><!--
 %PDF-1.3
@@ -271,16 +270,16 @@ I changed `msl` with `text` and that is when magic (or let's say imagick x) ) ha
   <image xlink:href="vid:text:/tmp/sess_*" x="0" y="0" width="100" height="100"/>
 </SVG>
 ```
-the thumbnail was correctly finally generated.
+the thumbnail was correctly generated.
 
 ![alt text](image-1.png)
 
-The thumbnail was correctly generated when the file existed, whereas the `thumbnail_path` is `null` when the file does not.  
+Actually, the thumbnail was correctly generated when the file existed, whereas the `thumbnail_path` is `null` when the file does not, and that is exactly the kind of behavior we need for our oracle.  
 
 ![alt text](image-2.png)
 
 
-By exploiting the different behavior in the two cases, we were able to extract the admin session ID character by character.
+By exploiting the different behavior in the two cases, we were able to extract the admin session ID character by character : Given the session ID length, we iterated over the characters and checked for each one if the thumbnail is generated correctly. Once it was, we consider that character valid and iterate over the next one and so on.
 
 Once logged in as admin, the final step was exploiting the SQL injection.
 By injecting a time-based payload into the `sort` parameter, we can observe response delays and hence, extract the admin password (Since this is a time-based SQLi, using dichotomy was a lifesaver as well!)
@@ -415,10 +414,10 @@ RUN chown root:root /home/user/vmchecker && \
 
 We know that we can control the command line (`argv[0]`) of processes which we create.
 
-On the one side, in option 1, this value is passed directly to `awk` as the program argument, which we can maybe exploit to achieve awk injection given by `awk <our_process_cmdline> <file>`.
+On the one side, in option 1, this value is passed directly to `awk` as the program argument (`awk <our_process_cmdline> <file>`), which we can maybe exploit to achieve an `awk` injection.
 Nevertheless, there is a very strict blacklist that blocks the following characters which are usually essential for meaningful `awk` programs : `* / ( { [ <space> - = s h`
 
-On the flip side, for the second option, injecting into `awk` would require influencing a process’s  `cgroup` path. This would mean either writing to `/proc` (which is not feasible, as `/proc` is a virtual filesystem) or modifying cgroups, which generally requires root privileges afaik. Therefore, this approach is quite harder.
+On the flip side, for the second option, injecting into `awk` would require influencing a process’s  `cgroup` path. This would mean either writing to `/proc` or modifying cgroups, which generally requires root privileges or not feasible, afaik. Therefore, this approach is quite harder.
 
 Well, these are only first intuitions, let’s now dive into the actual exploitation.
 
@@ -547,7 +546,7 @@ Now, it is us against `awk` and we know that in our process name :
 - We cannot use parentheses, so no `system()`.
 - We cannot use curly braces `{}` either.
 
-After digging into this [GNU awk documentation](https://www.gnu.org/software/gawk/manual/gawk.html#Using-getline-from-a-Pipe), I learned that it is possible to execute commands with `awk "<command> | getline" <file>`
+After digging into this [GNU awk documentation](https://www.gnu.org/software/gawk/manual/gawk.html#Using-getline-from-a-Pipe), I learned that it is possible to execute commands with `awk ""<command>" | getline" <file>`
 
 In our case, this allows us to run a command using `awk "\"cmd\"|getline" <file>` and hence, run commands as root. All we need now is to `cat` the flag file. However, there is still one issue, we cannot use either `s` or `h`, nor `/` . To bypass that, we can use hex encoding for the blacklisted characters.
 

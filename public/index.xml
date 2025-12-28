@@ -6,21 +6,21 @@
     <description>Recent content in Home on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 -0100</lastBuildDate>
+    <lastBuildDate>Sat, 27 Dec 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Root-Xmas 2025 | Writeup Selection</title>
+      <link>http://localhost:1313/posts/root-xmas-2025/</link>
+      <pubDate>Sat, 27 Dec 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/root-xmas-2025/</guid>
+      <description>&lt;p&gt;Once more, Root-Xmas CTF was back this year, and once more, it was the highlight of the month 🎀 This blog post details three of my challenges&amp;rsquo; solutions for the Days 8, 11 and 18, including a Bash jail, a Ruby web app and an &lt;code&gt;awk&lt;/code&gt; privesc.&lt;/p&gt;&#xA;&lt;p&gt;To speak my heart, I really learned a lot during this CTF as the web aficionada that I am had to get out of her comfort zone and really tryhard reverse, hardware, crypto, pwn, etc. In fact, from each challenge of the twenty which I validated, I did gain not only a flag, but also several new insights.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Intigriti | Challenge 1025 Writeup</title>
       <link>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</link>
       <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
       <guid>http://localhost:1313/posts/intigriti-challenge-1025-writeup/</guid>
       <description>&lt;p&gt;Intigriti&amp;rsquo;s October challenge 1025 was a really cool one, leveraging SSRF, local file inclusion, and RCE. I first found the flag in an unintended manner, and then worked my way into finding the RCE, popping that shell and flagging again!&lt;/p&gt;&#xA;&lt;p&gt;Kudos to &lt;a href=&#34;https://x.com/chux13786509&#34;&gt;@chux&lt;/a&gt; for this fun challenge ^.^&lt;/p&gt;&#xA;&lt;h2 id=&#34;unintended-solution&#34;&gt;Unintended Solution&lt;/h2&gt;&#xA;&lt;p&gt;We first have a panel where we can input the URL of an image and the app goes off to fetch it. Sounds innocent, right? In reality that panel will fetch any URL you give it. Indeed, under the hood the backend just runs a curl request with the supplied URL (and in our case it does not even check that the result is an image). That means we are not handing the server an &lt;em&gt;image&lt;/em&gt; so much as handing it an instruction: &lt;em&gt;go ask that address for me.&lt;/em&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Root-Xmas 2025 | Writeup Selection</title>
-      <link>http://localhost:1313/posts/root-xmas-2025/</link>
-      <pubDate>Tue, 14 Oct 2025 00:00:00 -0100</pubDate>
-      <guid>http://localhost:1313/posts/root-xmas-2025/</guid>
-      <description>&lt;p&gt;Once more, Root-Xmas CTF was back this year, and once more, it was the highlight of the month 🎀 This blog post details three of my challenges&amp;rsquo; solutions for the Days 8, 11 and 18, including a Bash jail, a Ruby web app and an &lt;code&gt;awk&lt;/code&gt; privesc.&lt;/p&gt;&#xA;&lt;p&gt;To speak my heart, I really learned a lot during this CTF as the web aficionada that I am had to get out of her comfort zone and really tryhard reverse, hardware, crypto, pwn, etc. In fact, from each challenge of the twenty which I validated, I did gain not only a flag, but also several new insights.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Whoami</title>
