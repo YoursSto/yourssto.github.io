@@ -112,7 +112,7 @@
   <div class="feed">
 
     <h2>Recent Posts</h2>
-    {{ range where site.RegularPages "Section" "posts" }}
+    {{ range first 3 (where site.RegularPages "Section" "posts") }}
    <a href="{{ .RelPermalink }}">
         <div class="card button">
 

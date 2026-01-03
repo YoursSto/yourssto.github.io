@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Dec 2025 00:00:00 -0100</lastBuildDate>
+    <lastBuildDate>Mon, 29 Dec 2025 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Intigriti | SantaCloud Challenge Writeup</title>
+      <link>http://localhost:1313/posts/intigriti-challenge-xmas-2025/</link>
+      <pubDate>Mon, 29 Dec 2025 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/intigriti-challenge-xmas-2025/</guid>
+      <description>&lt;p&gt;During the holidays, just when I thought the Xmas CTFs were over, I received a Discord notification about a special Intigriti holiday challenge. With one more to go, that, kids, is how a cozy day quietly turns into a cozy day &lt;em&gt;sprinkled with flags&lt;/em&gt;. SantaCloud was a cool and simple challenge where recon was the key.&lt;/p&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s get into its details&lt;/p&gt;&#xA;&lt;p&gt;We first land on &lt;code&gt;https://santacloud.intigriti.io/home&lt;/code&gt;. We can see that we have an access portal where we can only sign in.&#xA;&lt;img src=&#34;image.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Root-Xmas 2025 | Writeup Selection</title>
       <link>http://localhost:1313/posts/root-xmas-2025/</link>
