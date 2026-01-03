@@ -13,7 +13,7 @@ Let's get into its details
 We first land on `https://santacloud.intigriti.io/home`. We can see that we have an access portal where we can only sign in.
 ![alt text](image.png) 
 
-We first try enumerating the different endpoints by inspecting the code of the pages :
+We try SQL injection, etc, but in vain, so we go back to recon and try enumerating the different endpoints by inspecting the code of the pages :
 
 -`home`and `/login` which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to `/dashboard`. 
 - `/dashboard` providing a global dashboard including `/inventory` and `/map`
