@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: {{.Site.baseURL}}/sitemap.xml
+Sitemap: {{ .Site.BaseURL }}sitemap.xml
+
