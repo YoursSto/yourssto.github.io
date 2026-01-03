@@ -2,6 +2,7 @@ baseURL = 'https://yourssto.github.io/'
 languageCode = 'en-us'
 title = 'Yours, Sto ʚɞ'
 theme = 'new'
+enableRobotsTXT = true
 
 [caches]
   [caches.images]
@@ -10,3 +11,4 @@ theme = 'new'
 [params]
   description = "Yours, Sto - The Blog"
   image = "/thumbnail.png"
+
