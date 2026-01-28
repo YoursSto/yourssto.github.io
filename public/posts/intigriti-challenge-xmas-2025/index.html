@@ -76,34 +76,33 @@
     
     <div class="content">
       <p>During the holidays, just when I thought the Xmas CTFs were over, I received a Discord notification about a special Intigriti holiday challenge. With one more to go, that, kids, is how a cozy day quietly turns into a cozy day <em>sprinkled with flags</em>. SantaCloud was a cool and simple challenge where recon was the key.</p>
-<p>Let&rsquo;s get into its details</p>
+<p>Let&rsquo;s get into its details.</p>
 <p>We first land on <code>https://santacloud.intigriti.io/home</code>. We can see that we have an access portal where we can only sign in.
 <img src="image.png" alt="alt text"></p>
 <p>We try enumerating the different endpoints by inspecting the code of the pages :</p>
-<p>-<code>home</code>and <code>/login</code> which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to <code>/dashboard</code>.</p>
+<p>-<code>home</code> and <code>/login</code> which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to <code>/dashboard</code>.</p>
 <ul>
 <li><code>/dashboard</code> providing a global dashboard including <code>/inventory</code> and <code>/map</code></li>
-<li><code>/profile</code>to view the user profile</li>
+<li><code>/profile</code> to view the user profile</li>
 <li><code>/notes</code> to access notes</li>
-<li><code>/up</code> which is a healthcheck endpoint for the app
-/api/login</li>
+<li><code>/up</code> which is a healthcheck endpoint for the app</li>
 </ul>
 <p>Nevertheless, to really access the <code>/dashboard</code> and be able to interact with the last 5 endpoints, we need to login, as an <code>auth_login</code> is needed.</p>
 <p>We first try to check for any vulnerabilities in the login form. We try different payloads even for NoSQLi, but in vain.</p>
-<p>Hence, we dig a bit more into recon. Through fuzzing, we find <code>/robots.txt</code>with the following content :</p>
-<pre tabindex="0"><code>User-agent: *
-Allow: /
-
-# Disallow indexing of sensitive config files
-Disallow: /package.json
-Disallow: /backup.json
-Disallow: /artisan
-Disallow: /.env
-Disallow: /.env.local
-Disallow: /composer.json
-Disallow: /composer.json*
-Disallow: /composer.json~
-</code></pre><p>Given the latter, we try to access the endpoints listed in the file. After some seconds, we obtain code 200 for <code>https://santacloud.intigriti.io/composer.json~</code>.</p>
+<p>Hence, we dig a bit more into recon. Through fuzzing, we find <code>/robots.txt</code> with the following content :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>User-agent: *
+</span></span><span style="display:flex;"><span>Allow: /
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># Disallow indexing of sensitive config files
+</span></span><span style="display:flex;"><span>Disallow: /package.json
+</span></span><span style="display:flex;"><span>Disallow: /backup.json
+</span></span><span style="display:flex;"><span>Disallow: /artisan
+</span></span><span style="display:flex;"><span>Disallow: /.env
+</span></span><span style="display:flex;"><span>Disallow: /.env.local
+</span></span><span style="display:flex;"><span>Disallow: /composer.json
+</span></span><span style="display:flex;"><span>Disallow: /composer.json*
+</span></span><span style="display:flex;"><span>Disallow: /composer.json~
+</span></span></code></pre></div><p>Given the latter, we try to access the endpoints listed in the file. After some seconds, we obtain code 200 for <code>https://santacloud.intigriti.io/composer.json~</code>.</p>
 <p>We check its content and we obtain the content below :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;intigriti-challenges/santacloud&#34;</span>,

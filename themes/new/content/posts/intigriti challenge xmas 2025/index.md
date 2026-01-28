@@ -8,26 +8,25 @@ description = "Sensitive information exposed plus an IDOR, and voilà, the flag 
 
 During the holidays, just when I thought the Xmas CTFs were over, I received a Discord notification about a special Intigriti holiday challenge. With one more to go, that, kids, is how a cozy day quietly turns into a cozy day _sprinkled with flags_. SantaCloud was a cool and simple challenge where recon was the key.
 
-Let's get into its details
+Let's get into its details.
 
 We first land on `https://santacloud.intigriti.io/home`. We can see that we have an access portal where we can only sign in.
 ![alt text](image.png) 
 
 We try enumerating the different endpoints by inspecting the code of the pages :
 
--`home`and `/login` which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to `/dashboard`. 
+-`home` and `/login` which provide the same functionality of logging in, and we can see from the code source of the latter that once we do we will be redirected to `/dashboard`. 
 - `/dashboard` providing a global dashboard including `/inventory` and `/map`
-- `/profile`to view the user profile 
+- `/profile` to view the user profile 
 - `/notes` to access notes
 - `/up` which is a healthcheck endpoint for the app 
-/api/login
 
 Nevertheless, to really access the `/dashboard` and be able to interact with the last 5 endpoints, we need to login, as an `auth_login` is needed.
 
 We first try to check for any vulnerabilities in the login form. We try different payloads even for NoSQLi, but in vain. 
 
-Hence, we dig a bit more into recon. Through fuzzing, we find `/robots.txt`with the following content :
-```
+Hence, we dig a bit more into recon. Through fuzzing, we find `/robots.txt` with the following content :
+```markdown
 User-agent: *
 Allow: /
 
