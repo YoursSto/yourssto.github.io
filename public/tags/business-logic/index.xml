@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Business Logic on Yours, Sto ʚɞ</title>
+    <link>http://localhost:1313/tags/business-logic/</link>
+    <description>Recent content in Business Logic on Yours, Sto ʚɞ</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 23 Oct 2026 00:00:00 -0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/business-logic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Intigriti | Challenge 1026 Writeup</title>
+      <link>http://localhost:1313/posts/intigriti-challenge-1026-writeup/</link>
+      <pubDate>Fri, 23 Oct 2026 00:00:00 -0100</pubDate>
+      <guid>http://localhost:1313/posts/intigriti-challenge-1026-writeup/</guid>
+      <description>&lt;p&gt;Another Intigriti challenge and another writeup to detail its solution. The &amp;ldquo;Halloween Store&amp;rdquo; challenge involved an online store offering sweets. Our goal as players was to buy &lt;em&gt;The Midnight Collection&lt;/em&gt;, the Halloween-themed archive that costs €666, while our balance was only €66. How? Well.. One, two, three coupons, and the flag is yours!&lt;/p&gt;&#xA;&lt;h3 id=&#34;recon&#34;&gt;Recon&lt;/h3&gt;&#xA;&lt;p&gt;We land on the &lt;a href=&#34;https://challenge-1026.challenges.intigriti.io/&#34;&gt;challenge page&lt;/a&gt; and decide to explore &lt;em&gt;The Midnight Collection&lt;/em&gt;. (Kudos to Globules for challenge UI, one could feel the automn vibes 🍂)&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

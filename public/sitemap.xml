@@ -2,13 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/tags/business-logic/</loc>
+    <lastmod>2026-10-23T00:00:00-01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/intigriti-challenge-1026-writeup/</loc>
+    <lastmod>2026-10-23T00:00:00-01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2026-10-23T00:00:00-01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/intigriti-challenge-0926-writeup/</loc>
+    <lastmod>2026-09-23T00:00:00-01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/sqli/</loc>
+    <lastmod>2026-09-23T00:00:00-01:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/tags/idor/</loc>
     <lastmod>2025-12-29T00:00:00-01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/intigriti-challenge-xmas-2025/</loc>
-    <lastmod>2025-12-29T00:00:00-01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2025-12-29T00:00:00-01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/awk/</loc>
