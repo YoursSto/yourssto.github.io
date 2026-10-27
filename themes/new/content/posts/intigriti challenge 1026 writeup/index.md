@@ -7,7 +7,7 @@ description= "One coupon, two coupons, three coupons, and the flag is yours ^.^"
 +++
 
 Another Intigriti challenge and another writeup to detail its solution. The "Halloween Store" challenge involved an online store offering sweets. Our goal as players was to buy _The Midnight Collection_, the Halloween-themed archive that costs €666, while our balance was only €66. How? Well.. One, two, three coupons, and the flag is yours!
-
+    
 ### Recon
 
 We land on the [challenge page](https://challenge-1026.challenges.intigriti.io/) and decide to explore _The Midnight Collection_. (Kudos to Globules for challenge UI, one could feel the automn vibes 🍂)
