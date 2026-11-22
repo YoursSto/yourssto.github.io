@@ -10,7 +10,7 @@ Another Intigriti challenge and another writeup to detail its solution. The "Hal
     
 ### Recon
 
-We land on the [challenge page](https://challenge-1026.challenges.intigriti.io/) and decide to explore _The Midnight Collection_. (Kudos to Globules for challenge UI, one could feel the automn vibes 🍂)
+We land on the [challenge page](https://challenge-1026.challenges.intigriti.io/) and decide to explore _The Midnight Collection_. (Kudos to Globules for the challenge UI, one could feel the automn vibes 🍂)
 
 ![alt text](image-7.png)
 
