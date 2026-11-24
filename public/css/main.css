@@ -70,7 +70,8 @@ a, a:visited{
 }
 
 a:hover{
-    text-shadow: 0 0 10px #e8d4cd, 0 0 20px #e8d4cd, 0 0 30px #e8d4cd;
+    /* text-shadow: 0 0 10px #e8d4cd, 0 0 20px #e8d4cd, 0 0 30px #e8d4cd; */
+    text-shadow: 0 0 10px #e8d4cd,0 0 50px #e8d4cd;
 }
 
 hr{
@@ -225,8 +226,10 @@ div{
 
 
 .card.tag {
-padding:0.5em;
-min-height: auto;
+  padding:0.5em;
+  min-height: auto;
+  display: flex;
+  flex-direction: row;
 }
 
 
@@ -312,7 +315,7 @@ min-height: auto;
 } */
 
 .card:hover h2, .card:hover h1 {
-  text-shadow: 0 0 10px #e8d4cd, 0 0 20px #e8d4cd;
+  text-shadow: 0 0 1px #e8d4cd, 0 0 50px #e8d4cd;
 }
 
 .card:hover p{
