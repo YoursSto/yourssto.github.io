@@ -178,18 +178,15 @@ Three functions matter out of the whole binary.</p>
 <ol>
 <li><code>CODE</code>: <code>code_offset</code> = 0, <code>code_length</code> = C</li>
 <li><code>DATA</code>: <code>data_offset</code> = C, <code>data_length</code> = D</li>
-<li><code>DATA</code>: <code>data_offset</code> = C + D, <code>data_length</code> = D ← overwritten<br>
+<li><code>DATA</code>: <code>data_offset</code> = C + D, <code>data_length</code> = D <strong>← overwritten</strong><br>
 If we leave it here, it can be fine but the real issue is the following.</li>
 </ol>
 </li>
-<li>In <code>EXEC</code> (to use it we need to send <code>CODE</code>, then <code>DATA</code>, then <code>SIGN</code>, then <code>EXEC</code>):
-<ul>
-<li>On one side, <code>HASH</code> starts at start of <code>CODE</code> (<code>inbuf + code_offset</code>) and covers <code>CODE || len(last_DATA)</code> bytes, in other words, <code>code_length + data_length</code>.</li>
-<li>On the flip side, the execution pointer of <code>EXEC</code> starts at the start of last <code>DATA</code> (<code>inbuf + data_offset</code>).</li>
+<li>In <code>EXEC</code> (to use it we need to send <code>CODE</code>, then <code>DATA</code>, then <code>SIGN</code>, then <code>EXEC</code>):<br>
+On one side, <code>HASH</code> starts at start of <code>CODE</code> (<code>inbuf + code_offset</code>) and covers <code>CODE || len(last_DATA)</code> bytes, in other words, <code>code_length + data_length</code>.
+On the flip side, the execution pointer of <code>EXEC</code> starts at the start of last <code>DATA</code> (<code>inbuf + data_offset</code>).</li>
 </ul>
-</li>
-</ul>
-<p>Combining these two elements, and as the data_length is not updated when several <code>DATA</code> chunks are received, if we send <code>CODE</code>, then <code>DATA1</code> (signed), then <code>DATA2</code> of the same length, the hash still verifies <code>CODE || DATA1</code> but the shellcode runs <code>DATA2</code>. That will allow us to execute our code on the server.</p>
+<p>Combining these two elements, and as the <code>data_length</code> is not updated when several <code>DATA</code> chunks are received, if we send <code>CODE</code>, then <code>DATA1</code> (signed), then <code>DATA2</code> of the same length, the hash still verifies <code>CODE || DATA1</code> but the shellcode runs <code>DATA2</code>. That will allow us to execute our code on the server.</p>
 <p><img src="image-5.png" alt="alt text"></p>
 <p>Nevertheless, to achieve that, we first need a signed code as we do not have the private key.</p>
 <p>Let&rsquo;s try to interact with the binary to see what the command <code>HELP</code> yields.</p>

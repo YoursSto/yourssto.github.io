@@ -100,15 +100,15 @@ Three functions matter out of the whole binary.
 
 Here, we observe two issues : 
 - First, as DATA overwrites the chunk with each `DATA` received, this entails that if we send : 
-    1. `CODE`: `code_offset` = 0, `code_length` = C
-    2. `DATA`: `data_offset` = C, `data_length` = D
-    3. `DATA`: `data_offset` = C + D, `data_length` = D ← overwritten  
-    If we leave it here, it can be fine but the real issue is the following.
-- In `EXEC` (to use it we need to send `CODE`, then `DATA`, then `SIGN`, then `EXEC`): 
-    - On one side, `HASH` starts at start of `CODE` (`inbuf + code_offset`) and covers `CODE || len(last_DATA)` bytes, in other words, `code_length + data_length`.
-    - On the flip side, the execution pointer of `EXEC` starts at the start of last `DATA` (`inbuf + data_offset`). 
+  1. `CODE`: `code_offset` = 0, `code_length` = C
+  2. `DATA`: `data_offset` = C, `data_length` = D
+  3. `DATA`: `data_offset` = C + D, `data_length` = D **← overwritten**  
+  If we leave it here, it can be fine but the real issue is the following.
+- In `EXEC` (to use it we need to send `CODE`, then `DATA`, then `SIGN`, then `EXEC`):   
+  On one side, `HASH` starts at start of `CODE` (`inbuf + code_offset`) and covers `CODE || len(last_DATA)` bytes, in other words, `code_length + data_length`.
+  On the flip side, the execution pointer of `EXEC` starts at the start of last `DATA` (`inbuf + data_offset`). 
     
-Combining these two elements, and as the data_length is not updated when several `DATA` chunks are received, if we send `CODE`, then `DATA1` (signed), then `DATA2` of the same length, the hash still verifies `CODE || DATA1` but the shellcode runs `DATA2`. That will allow us to execute our code on the server.
+Combining these two elements, and as the `data_length` is not updated when several `DATA` chunks are received, if we send `CODE`, then `DATA1` (signed), then `DATA2` of the same length, the hash still verifies `CODE || DATA1` but the shellcode runs `DATA2`. That will allow us to execute our code on the server.
 
 ![alt text](image-5.png)
 
