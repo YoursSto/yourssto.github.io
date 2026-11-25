@@ -1,7 +1,9 @@
 
-/* html{
-  background-color: #e8d4cd;
-} */
+html{
+  background-color: #0f1014; 
+  min-height: 100%;
+}
+
 
 header {
   border-bottom: 1px solid #e8d4cd28;
@@ -26,8 +28,9 @@ body{
   display: flex;
   flex-direction : column;
   align-items: center;
-  background: linear-gradient(-45deg, #ba9386, #0f1014, #232a30, #0e0f13);
+  background: linear-gradient(-45deg, #ba9386, #0f1014, #232a30, #0e0f13) #0f1014;
   background-size: 500% 500%;
+  background-attachment: fixed;     /* gradient no longer scrolls with content */
   animation: gradient 15s ease infinite;
   /* height: 100vh; */
   color: white;
@@ -459,7 +462,6 @@ blockquote cite::before{
   margin-left: 0;
   margin-right: 0;
 }
-
 
 
 /* button */
