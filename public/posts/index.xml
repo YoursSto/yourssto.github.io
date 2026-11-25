@@ -6,14 +6,14 @@
     <description>Recent content in Posts on Yours, Sto ʚɞ</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Nov 2026 00:00:00 -0100</lastBuildDate>
+    <lastBuildDate>Wed, 25 Nov 2026 00:00:00 -0100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Intigriti | Challenge 1126 Writeup</title>
       <link>http://localhost:1313/posts/intigriti-challenge-1126-writeup/</link>
-      <pubDate>Mon, 23 Nov 2026 00:00:00 -0100</pubDate>
+      <pubDate>Wed, 25 Nov 2026 00:00:00 -0100</pubDate>
       <guid>http://localhost:1313/posts/intigriti-challenge-1126-writeup/</guid>
-      <description>&lt;p&gt;A Super Fast Writeup for the Super Fast Server x) This challenge encompassed both web and reverse with a signature bypass that allowed us to read &lt;code&gt;/the_real.flag&lt;/code&gt; from a server that only executes RSA-2048 signed code.&lt;/p&gt;&#xA;&lt;h3 id=&#34;recon&#34;&gt;Recon&lt;/h3&gt;&#xA;&lt;p&gt;We land on a login page. Sending anything to &lt;code&gt;/login.html&lt;/code&gt; returns a &lt;strong&gt;&lt;code&gt;418 I&#39;m a teapot&lt;/code&gt;&lt;/strong&gt;, which is not a normal auth response, that&amp;rsquo;s the server telling us &lt;em&gt;&amp;ldquo;this endpoint is a not really useful&amp;rdquo;&lt;/em&gt;.&lt;/p&gt;</description>
+      <description>&lt;p&gt;A Super Fast Writeup for the Super Fast Server challenge x) The latter encompassed both web and reverse with a signature bypass that allowed us to read &lt;code&gt;/the_real.flag&lt;/code&gt; from a server that only executes RSA-2048 signed code.&lt;/p&gt;&#xA;&lt;h2 id=&#34;exploit&#34;&gt;Exploit&lt;/h2&gt;&#xA;&lt;h3 id=&#34;recon&#34;&gt;Recon&lt;/h3&gt;&#xA;&lt;p&gt;We land on a login page. Sending anything to &lt;code&gt;/login.html&lt;/code&gt; returns a &lt;strong&gt;&lt;code&gt;418 I&#39;m a teapot&lt;/code&gt;&lt;/strong&gt;, which is not a normal auth response, that&amp;rsquo;s the server telling us &lt;em&gt;&amp;ldquo;this endpoint is a not really useful&amp;rdquo;&lt;/em&gt;.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Intigriti | Challenge 1026 Writeup</title>

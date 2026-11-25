@@ -169,7 +169,7 @@ div{
 .content img {
   display: block;        
   margin: 1% auto;        
-  max-width: 71%;     
+  max-width: 95%;     
   height: auto;
   border-radius: 15px;
   filter: drop-shadow(0 0 1px #e8d4cd49) drop-shadow(0 0 2px #e8d4cda2) ;
@@ -214,6 +214,7 @@ div{
   /* min-width: 75% */
 
 }
+
 
 .tags{
   padding: 1%
@@ -267,9 +268,9 @@ div{
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(232, 212, 205, 0.15) 45%,
-    rgba(232, 212, 205, 0.25) 50%,
-    rgba(232, 212, 205, 0.15) 55%,
+    rgba(232, 212, 205, 0.15) 85%,
+    rgba(232, 212, 205, 0.25) 90%,
+    rgba(232, 212, 205, 0.15) 95%,
     transparent 100%
   );
   opacity: 0;
@@ -406,6 +407,58 @@ footer p{
     text-align: center;
 }
 
+
+blockquote{
+  margin: 1.5rem auto;
+  padding: 0.75rem 1.25rem;
+  width: 51%;                   
+  border-left: 3px solid #e8d4cd;
+  background:#272822ce;
+  border-radius: 0 6px 6px 0;
+  color: #e8d4cd;               
+  font-style: italic;
+  position: relative;
+}
+
+blockquote p{
+  width: 100%;                  
+  margin: 0.25rem 0;
+  text-align: left;            
+}
+
+blockquote p:first-child{ 
+  margin-top: 0; 
+  width: 100%;
+}
+blockquote p:last-child{  
+  margin-bottom: 0; 
+  width: 100%;
+}
+
+
+blockquote cite,
+blockquote footer{
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  font-style: normal;
+  color: #e8d4cd99;            
+}
+
+blockquote cite::before{
+  content: "— ";
+}
+
+
+/* any code block that lives inside a list item should fill the li */
+.content li .highlight,
+.content li pre{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: 0;
+}
 
 
 

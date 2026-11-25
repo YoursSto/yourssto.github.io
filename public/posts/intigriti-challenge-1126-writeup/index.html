@@ -60,7 +60,7 @@
   <h1>Intigriti | Challenge 1126 Writeup</h1>
 
     
-      <p class="date">Nov 23, 2026</p>
+      <p class="date">Nov 25, 2026</p>
     
 
 
@@ -75,17 +75,22 @@
 
     
     <div class="content">
-      <p>A Super Fast Writeup for the Super Fast Server x) This challenge encompassed both web and reverse with a signature bypass that allowed us to read <code>/the_real.flag</code> from a server that only executes RSA-2048 signed code.</p>
+      <p>A Super Fast Writeup for the Super Fast Server challenge x) The latter encompassed both web and reverse with a signature bypass that allowed us to read <code>/the_real.flag</code> from a server that only executes RSA-2048 signed code.</p>
+<h2 id="exploit">Exploit</h2>
 <h3 id="recon">Recon</h3>
 <p>We land on a login page. Sending anything to <code>/login.html</code> returns a <strong><code>418 I'm a teapot</code></strong>, which is not a normal auth response, that&rsquo;s the server telling us <em>&ldquo;this endpoint is a not really useful&rdquo;</em>.</p>
 <p>The changelog is our real recon target:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>v2.0.1 — Added signups, Added POST request parsing.  
-</span></span><span style="display:flex;"><span>v2.0.0 — Fixed a path traversal, Added a custom protocol, protected by a very good secret to allow execution of RSA-2048 signed code.   
-</span></span><span style="display:flex;"><span>v1.0.0 — Initial public release.
-</span></span></code></pre></div><p>And the docs, most importantly:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>The server serves files from the PWD.   
-</span></span><span style="display:flex;"><span>DON&#39;T Run the server binary in the PWD.
-</span></span></code></pre></div><p>In other words, <em>the server binary is in the PWD and is downloadable, go reverse it.</em></p>
+<blockquote>
+<p><strong>v2.0.1</strong> - Added signups, <strong>Added POST request parsing</strong>.<br>
+<strong>v2.0.0</strong> - Fixed a path traversal, <strong>Added a custom protocol, protected by a very good secret</strong> to allow execution of RSA-2048 signed code.<br>
+<strong>v1.0.0</strong> - Initial public release.</p>
+</blockquote>
+<p>And the docs, most importantly:</p>
+<blockquote>
+<p>The server serves files from the PWD.<br>
+<strong>DON&rsquo;T</strong> Run the server binary in the PWD.</p>
+</blockquote>
+<p>In other words, <em>the server binary is in the PWD and is downloadable, go reverse it.</em></p>
 <p>We download the binary which we later reverse using Ghidra.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>└─$ curl https://challenge-1126.challenges.intigriti.io/superfastserver -o superfastserver 
 </span></span><span style="display:flex;"><span>└─$ file superfastserver                                                                      

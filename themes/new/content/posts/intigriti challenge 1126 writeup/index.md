@@ -1,30 +1,28 @@
 +++
 title = 'Intigriti | Challenge 1126 Writeup'
-date = 2026-11-23T00:00:00-01:00
+date = 2026-11-25T00:00:00-01:00
 draft = false
 tags = ['Reverse']
 description= "A super fast writeup for the super fast server x)"
 +++
 
-A Super Fast Writeup for the Super Fast Server x) This challenge encompassed both web and reverse with a signature bypass that allowed us to read `/the_real.flag` from a server that only executes RSA-2048 signed code.
+A Super Fast Writeup for the Super Fast Server challenge x) The latter encompassed both web and reverse with a signature bypass that allowed us to read `/the_real.flag` from a server that only executes RSA-2048 signed code.
     
-
+## Exploit
 ### Recon
 
 We land on a login page. Sending anything to `/login.html` returns a **`418 I'm a teapot`**, which is not a normal auth response, that's the server telling us *"this endpoint is a not really useful"*.
 
 The changelog is our real recon target:
-```text
-v2.0.1 — Added signups, Added POST request parsing.  
-v2.0.0 — Fixed a path traversal, Added a custom protocol, protected by a very good secret to allow execution of RSA-2048 signed code.   
-v1.0.0 — Initial public release.
-```
+
+> **v2.0.1** - Added signups, **Added POST request parsing**.  
+> **v2.0.0** - Fixed a path traversal, **Added a custom protocol, protected by a very good secret** to allow execution of RSA-2048 signed code.   
+> **v1.0.0** - Initial public release.
 
 And the docs, most importantly:
-```text
-The server serves files from the PWD.   
-DON'T Run the server binary in the PWD.
-```
+
+> The server serves files from the PWD.   
+> **DON'T** Run the server binary in the PWD.
 
 In other words, _the server binary is in the PWD and is downloadable, go reverse it._
 
